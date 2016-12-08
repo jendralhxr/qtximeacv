@@ -6,8 +6,9 @@
 #define RENDER_INTERVAL 4
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
-#define FRAMENUM_MAX 500
-// ximea parameter list goes here
+#define FRAMENUM_MAX 100
+#define OPT_SAVE
+
 /*
 captureThread::captureThread(QObject *parent) : QThread(parent){
 }*/
@@ -45,9 +46,9 @@ void captureThread::run(){
    for (int framenum=0; framenum<FRAMENUM_MAX; framenum++){
 //   while (1){
        xiGetImage(handle, 40, &image); // Capture Image //timeout
-// saving to buffer
-    captured_frames[framenum]= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
-    time_stop = QDateTime::currentDateTime().toMSecsSinceEpoch();
+       temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
+       captured_frames[framenum]= temp.copy(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+       time_stop = QDateTime::currentDateTime().toMSecsSinceEpoch();
        time_lapsed= time_stop- time_start;
        if (time_lapsed > 1000){ // 1 sec lapsed
             emit getFPS(frames_in_sec);
@@ -57,11 +58,12 @@ void captureThread::run(){
        }
        else frames_in_sec++;
        if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(image.bp);
-    }
+#ifdef OPT_SAVE
+   }
    for (int framenum=0; framenum<FRAMENUM_MAX; framenum++){
-        temp = captured_frames[framenum].rgbSwapped();
-        temp.save(mystring.sprintf("xi%04d.png",framenum),"PNG",0);
-
+        qDebug("saving %d",framenum);
+        captured_frames[framenum].rgbSwapped().save(mystring.sprintf("xi%04d.png",framenum),"PNG",0);
+#endif
    }
 
 }
