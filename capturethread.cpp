@@ -6,7 +6,7 @@
 #define RENDER_INTERVAL 4
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
-#define FRAMENUM_MAX 100
+#define FRAMENUM_MAX 2000
 #define OPT_SAVE
 
 /*
@@ -62,7 +62,7 @@ void captureThread::run(){
    }
    for (int framenum=0; framenum<FRAMENUM_MAX; framenum++){
         qDebug("saving %d",framenum);
-        captured_frames[framenum].rgbSwapped().save(mystring.sprintf("xi%04d.png",framenum),"PNG",0);
+//        captured_frames[framenum].rgbSwapped().save(mystring.sprintf("xi%04d.png",framenum),"PNG",0);
 #endif
    }
 
