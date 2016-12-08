@@ -19,7 +19,7 @@ public slots:
     int setFrameSize(unsigned width, unsigned height);
 
 private:
-    QImage disp;
+    QImage disp, temp;
     QPainter painter;
     QPixmap pixmap;
     unsigned frame_width, frame_height;

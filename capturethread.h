@@ -2,6 +2,8 @@
 #define CAPTURETHREAD_H
 
 #include <QThread>
+#include <QImage>
+#include <QPixmap>
 #include <m3api/xiApi.h>
 
 class captureThread : public QThread
@@ -26,9 +28,8 @@ private:
     XI_RETURN stat = XI_OK;
     unsigned long buffer_size;
     unsigned int frames_in_sec, time_start, time_stop, time_lapsed;
-
-
-
+    QImage *captured_frames, temp;
+    QString mystring;
 };
 
 

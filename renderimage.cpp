@@ -12,7 +12,9 @@ renderImage::renderImage(QWidget *parent) : QLabel(parent){
 }
 
 int renderImage::receiveBitmap(void *buffer){
-    disp = QImage(static_cast<unsigned char*>(buffer), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
+    //disp= QImage(static_cast<unsigned char*>(buffer), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
+    temp= QImage(static_cast<unsigned char*>(buffer), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
+    disp= temp.rgbSwapped();
     setPixmap(QPixmap::fromImage(disp));
     update();
     return(0);
