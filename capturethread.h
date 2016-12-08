@@ -30,6 +30,7 @@ private:
     unsigned int frames_in_sec, time_start, time_stop, time_lapsed;
     QImage *captured_frames, temp;
     QString mystring;
+    float fps;
 };
 
 
