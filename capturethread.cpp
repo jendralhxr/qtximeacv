@@ -7,8 +7,7 @@
 #define RENDER_INTERVAL 10
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
-#define FRAMENUM_MAX 1000
-#define OPT_SAVE
+#define FRAMENUM_MAX 10
 
 /*
 captureThread::captureThread(QObject *parent) : QThread(parent){
@@ -19,13 +18,13 @@ captureThread::captureThread()
     //captured_frames = new QImage()[FRAMENUM_MAX];
     if(xiOpenDevice(0, &handle) != XI_OK) exit(1);
     xiSetParamInt(handle, XI_PRM_EXPOSURE, 1000); // us
-    xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
+    xiSetParamFloat(handle, XI_PRM_GAIN, 5); // -3.5 to 7.4
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
     xiSetParamInt(handle, XI_PRM_OFFSET_X, 0);
     xiSetParamInt(handle, XI_PRM_OFFSET_Y, 0);
     xiSetParamInt(handle, XI_PRM_WIDTH, IMAGE_WIDTH);
     xiSetParamInt(handle, XI_PRM_HEIGHT, IMAGE_HEIGHT);
-    xiSetParamInt(handle, XI_PRM_AUTO_WB, 1);
+    xiSetParamInt(handle, XI_PRM_AUTO_WB, 0);
  //   xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
  //   xiSetParamInt(handle, XI_PRM_FRAMERATE, 90);// Requested fps
 
@@ -43,11 +42,13 @@ void captureThread::run(){
    xiSetParamInt(handle, XI_PRM_HEIGHT, IMAGE_HEIGHT);
    xiStartAcquisition(handle);
    time_start= QDateTime::currentDateTime().toMSecsSinceEpoch();
-   for (int framenum=0; framenum<FRAMENUM_MAX; framenum++){
-//   while (1){
+   for (framenum=0; framenum<FRAMENUM_MAX; framenum++){
        xiGetImage(handle, 1, &image); // Capture Image //timeout
        temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
-       captured_frames[framenum]= temp.copy(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+       // whether save or display
+       if (save_frames) captured_frames[framenum]= temp.copy(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+       else if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(image.bp);
+       // timing
        time_stop = QDateTime::currentDateTime().toMSecsSinceEpoch();
        time_lapsed= time_stop- time_start;
        if (time_lapsed > 1000){ // 1 sec lapsed
@@ -60,14 +61,20 @@ void captureThread::run(){
 
        }
        else frames_in_sec++;
-       if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(image.bp);
-#ifdef OPT_SAVE
+       if (!save_frames) framenum= 0;
    }
+
+   if (save_frames){
    for (int framenum=0; framenum<FRAMENUM_MAX; framenum++){
         qDebug("saving %d",framenum);
         captured_frames[framenum].rgbSwapped().save(mystring.sprintf("xi%04d.png",framenum),"PNG",0);
-#endif
+        }
    }
+
    exit(0);
-   QApplication::exit(0);
+}
+
+void captureThread::saveFrames(){
+    save_frames= TRUE;
+    framenum= 0;
 }

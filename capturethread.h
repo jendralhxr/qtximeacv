@@ -20,6 +20,7 @@ signals:
     void getImageSize(unsigned width, unsigned height);
 
 public slots:
+    void saveFrames();
 
 private:
     void run();
@@ -31,6 +32,8 @@ private:
     QImage *captured_frames, temp;
     QString mystring;
     float fps;
+    bool save_frames= FALSE;
+    int framenum;
 };
 
 
