@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
 
     QPushButton *saveButton= new QPushButton("save frames");
 
-    QObject::connect(mythread,SIGNAL(getImage(void*)),camimage,SLOT(receiveBitmap(void*)));
+    //QObject::connect(mythread, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
+    QObject::connect(mythread, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
+
     QObject::connect(saveButton, SIGNAL(pressed()), mythread, SLOT(saveFrames()));
     //saveButton->show();
 

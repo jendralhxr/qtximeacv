@@ -15,7 +15,8 @@ public:
 signals:
 
 public slots:
-    int receiveBitmap(void *buffer);
+    void receiveBitmap(void *buffer);
+    void receiveBitmap (QImage image);
     int setFrameSize(unsigned width, unsigned height);
 
 private:

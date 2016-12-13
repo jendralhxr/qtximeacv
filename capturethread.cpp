@@ -47,7 +47,8 @@ void captureThread::run(){
        temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
        // whether save or display
        if (save_frames) captured_frames[framenum]= temp.copy(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-       else if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(image.bp);
+//       else if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(image.bp);
+       else if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(temp);
        // timing
        time_stop = QDateTime::currentDateTime().toMSecsSinceEpoch();
        time_lapsed= time_stop- time_start;
@@ -69,9 +70,11 @@ void captureThread::run(){
         qDebug("saving %d",framenum);
         captured_frames[framenum].rgbSwapped().save(mystring.sprintf("xi%04d.png",framenum),"PNG",0);
         }
+   save_frames= FALSE;
    }
 
-   exit(0);
+   //exit(0);
+    this->start(QThread::NormalPriority);
 }
 
 void captureThread::saveFrames(){

@@ -11,12 +11,16 @@ renderImage::renderImage(QWidget *parent) : QLabel(parent){
     setMinimumWidth(IMAGE_WIDTH);
 }
 
-int renderImage::receiveBitmap(void *buffer){
+void renderImage::receiveBitmap(void *buffer){
     setPixmap(QPixmap::fromImage(QImage(static_cast<unsigned char*>(buffer), \
        IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888).rgbSwapped()));
     update();
-    return(0);
 
+}
+
+void renderImage::receiveBitmap(QImage image){
+    setPixmap(QPixmap::fromImage(image.rgbSwapped()));
+    update();
 }
 
 int renderImage::setFrameSize(unsigned width, unsigned height){
