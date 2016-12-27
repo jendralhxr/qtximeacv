@@ -18,6 +18,7 @@ signals:
     void getFPS(unsigned fps);
     void getImage(void *buffer);
     void getImage(QImage image);
+    void getImageRaw(QImage image);
     void getImageSize(unsigned width, unsigned height);
 
 public slots:

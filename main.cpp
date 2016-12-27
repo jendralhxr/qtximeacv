@@ -20,7 +20,8 @@ int main(int argc, char *argv[])
     QPushButton *saveButton= new QPushButton("save frames");
 
     //QObject::connect(mythread, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
-    QObject::connect(mythread, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
+    //QObject::connect(mythread, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
+    QObject::connect(mythread, SIGNAL(getImageRaw(QImage)), camimage, SLOT(receiveBitmapRaw(QImage)));
 
     QObject::connect(saveButton, SIGNAL(pressed()), mythread, SLOT(saveFrames()));
     //saveButton->show();
@@ -32,6 +33,6 @@ int main(int argc, char *argv[])
     display->setLayout(simplelayout);
     display->show();
 
-    mythread->start(QThread::NormalPriority);
+    mythread->start(QThread::HighestPriority);
     return a.exec();
 }
