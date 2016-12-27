@@ -5,7 +5,9 @@
 #include <QImage>
 #include <QPixmap>
 #include <m3api/xiApi.h>
+#include <opencv2/opencv.hpp>
 
+using namespace cv;
 class captureThread : public QThread
 {
     Q_OBJECT
@@ -27,6 +29,7 @@ public slots:
 private:
     void run();
     XI_IMG image;
+    Mat *frame, *frame_color;
     HANDLE handle = NULL;
     XI_RETURN stat = XI_OK;
     unsigned long buffer_size;
