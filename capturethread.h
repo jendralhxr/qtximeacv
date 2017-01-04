@@ -1,16 +1,17 @@
 #ifndef CAPTURETHREAD_H
 #define CAPTURETHREAD_H
-#define WIN64
 
 #include <QThread>
 #include <QImage>
 #include <QPixmap>
-#ifdef WIN64
+#ifdef __linux__ 
+#include <m3api/xiApi.h>
+#elif _WIN32
 #include <xiApi.h>
 #else
-#include <m3api/xiApi.h>
-#endif
 
+#endif
+//
 #include <opencv2/opencv.hpp>
 
 using namespace cv;

@@ -14,7 +14,7 @@ class capturePlot : public QwtPlot
 
 public:
     explicit capturePlot(QWidget *parent = 0);
-    capturePlot();
+ //   capturePlot();
 
 public slots:
     void updatePoints(double val);

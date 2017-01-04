@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QPushButton>
-
 #include "captureplot.h"
 #include "capturethread.h"
 #include "renderimage.h"

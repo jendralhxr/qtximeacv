@@ -1,5 +1,4 @@
 #include "capturethread.h"
-#include <m3api/xiApi.h>
 #include <string.h> //not sure
 #include <QDateTime>
 #include <QApplication>
