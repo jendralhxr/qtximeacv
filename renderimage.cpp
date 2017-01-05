@@ -28,7 +28,3 @@ int renderImage::setFrameSize(unsigned width, unsigned height){
     frame_height= height;
     return(width-height);
 }
-
-void renderImage::receiveBitmapRaw(QImage image){
-    setPixmap(QPixmap::fromImage(image));
-}
