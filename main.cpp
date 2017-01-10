@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     QObject::connect(mythread, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
     QObject::connect(exposureBox, SIGNAL(valueChanged(int)), mythread, SLOT(setExposure(int)));
     QObject::connect(saveButton, SIGNAL(pressed()), mythread, SLOT(saveFrames()));
-    QObject::connect(mythread, SIGNAL(getFPS(uint)), rateBox, SLOT(setValue(int)));
+    QObject::connect(mythread, SIGNAL(getFPS(int)), rateBox, SLOT(setValue(int)));
     //saveButton->show();
 
     QGridLayout *simplelayout= new QGridLayout();
@@ -52,6 +52,6 @@ int main(int argc, char *argv[])
 
     exposureBox->setValue(EXPOSURE_DEFAULT);
 //    mythread->setExposure(EXPOSURE_DEFAULT);
-//  mythread->start(QThread::HighestPriority);
+  mythread->start(QThread::HighestPriority);
     return a.exec();
 }

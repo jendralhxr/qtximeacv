@@ -6,7 +6,7 @@
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
 #define EXPOSURE 3000 // us
-#define FRAMENUM_MAX 750
+#define FRAMENUM_MAX 200
 
 using namespace cv;
 
@@ -81,11 +81,7 @@ void captureThread::run(){
    for (int framenum=0; framenum<FRAMENUM_MAX; framenum++){
         qDebug("saving %d",framenum);
         cvtColor(captured_frames[framenum], *frame_color, CV_BayerBG2BGR);
-        //qt saving
-        assert(frame_color->isContinuous()); // make sure the memory is contiguous
-        temp = QImage(frame_color->data, frame_color->cols, frame_color->rows, frame_color->cols*3, QImage::Format_RGB888);
-        temp.rgbSwapped().save(mystring.sprintf("xi%04d.png",framenum),"PNG",0);
-        //opencv saving
+        //opencv saving is faster
         sprintf(filename,"xi%04d.png",framenum);
         imwrite(filename, *frame_color);
     }

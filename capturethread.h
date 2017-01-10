@@ -22,7 +22,7 @@ public:
    captureThread();
 
 signals:
-    void getFPS(unsigned fps);
+    void getFPS(int fps);
     void getImage(void *buffer);
     void getImage(QImage image);
     void getImageSize(unsigned width, unsigned height);
