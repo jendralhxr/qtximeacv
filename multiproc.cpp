@@ -1,3 +1,6 @@
+// compile against Ximea M3 API and OpenCV
+// g++ test.cpp -lm3api `pkg-config --libs opencv`
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
