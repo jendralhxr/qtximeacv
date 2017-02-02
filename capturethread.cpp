@@ -6,7 +6,7 @@
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
 #define EXPOSURE 3000 // us
-#define FRAMENUM_MAX 200
+#define FRAMENUM_MAX 2000
 
 using namespace cv;
 
@@ -17,9 +17,10 @@ captureThread::captureThread(QObject *parent) : QThread(parent){
 
 captureThread::captureThread()
 {
+    framenum_max= FRAMENUM_MAX;
     if(xiOpenDevice(0, &handle) != XI_OK) exit(1);
     xiSetParamInt(handle, XI_PRM_EXPOSURE, EXPOSURE); // us
-    xiSetParamFloat(handle, XI_PRM_GAIN, 6); // -3.5 to 7.4
+    xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
     //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
     xiSetParamInt(handle, XI_PRM_OFFSET_X, 0);
@@ -45,7 +46,7 @@ void captureThread::run(){
    xiStartAcquisition(handle);
    here:
    time_start= QDateTime::currentDateTime().toMSecsSinceEpoch();
-   for (framenum=0; framenum<FRAMENUM_MAX; framenum++){
+   for (framenum=0; framenum<framenum_max; framenum++){
        xiGetImage(handle, 1000, &image); // Capture Image //timeout in microseconds
        //temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888); //rgb24
        //temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, QImage::Format_Grayscale8);
@@ -78,7 +79,7 @@ void captureThread::run(){
    }
 
    if (save_frames){
-   for (int framenum=0; framenum<FRAMENUM_MAX; framenum++){
+   for (int framenum=0; framenum<framenum_max; framenum++){
         qDebug("saving %d",framenum);
         cvtColor(captured_frames[framenum], *frame_color, CV_BayerBG2BGR);
         //opencv saving is faster
@@ -96,6 +97,12 @@ void captureThread::run(){
 void captureThread::saveFrames(){
     save_frames= TRUE;
     framenum= 0;
+}
+
+void captureThread::setFramesToSave(int val){
+    if (val>FRAMENUM_MAX) framenum_max= FRAMENUM_MAX;
+    else framenum_max= val;
+    qDebug("saving buffer= %d", framenum_max);
 }
 
 void captureThread::setExposure(int val){

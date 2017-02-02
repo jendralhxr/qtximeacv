@@ -30,6 +30,10 @@ int main(int argc, char *argv[])
     rateBox->setMaximum(600);
     rateBox->setReadOnly(true);
 
+    QLabel *framestoSave = new QLabel("Saved Frames");
+    QSpinBox *framesBox = new QSpinBox();
+    framesBox->setMaximum(2000);
+
     QPushButton *saveButton= new QPushButton("save frames");
 
     //QObject::connect(mythread, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
@@ -37,21 +41,25 @@ int main(int argc, char *argv[])
     QObject::connect(exposureBox, SIGNAL(valueChanged(int)), mythread, SLOT(setExposure(int)));
     QObject::connect(saveButton, SIGNAL(pressed()), mythread, SLOT(saveFrames()));
     QObject::connect(mythread, SIGNAL(getFPS(int)), rateBox, SLOT(setValue(int)));
-    //saveButton->show();
+    QObject::connect(framesBox, SIGNAL(valueChanged(int)), mythread, SLOT(setFramesToSave(int)));
 
     QGridLayout *simplelayout= new QGridLayout();
-    simplelayout->addWidget(camimage, 0, 0, 1, 5, Qt::AlignHCenter);
+    simplelayout->addWidget(camimage, 0, 0, 1, 7, Qt::AlignHCenter);
     simplelayout->addWidget(exposureLabel, 1, 0, 1, 1, Qt::AlignRight);
     simplelayout->addWidget(exposureBox, 1, 1, 1, 1, Qt::AlignLeft);
     simplelayout->addWidget(rateLabel, 1, 2, 1, 1, Qt::AlignRight);
     simplelayout->addWidget(rateBox, 1, 3, 1, 1, Qt::AlignLeft);
-    simplelayout->addWidget(saveButton, 1 ,4, 1, 1, Qt::AlignHCenter);
+    simplelayout->addWidget(framestoSave, 1, 4, 1,1, Qt::AlignHCenter);
+    simplelayout->addWidget(framesBox, 1, 5, 1, 1, Qt::AlignHCenter);
+    simplelayout->addWidget(saveButton, 1 ,6, 1, 1, Qt::AlignHCenter);
+
     QWidget *display= new QWidget();
     display->setLayout(simplelayout);
     display->show();
 
     exposureBox->setValue(EXPOSURE_DEFAULT);
 //    mythread->setExposure(EXPOSURE_DEFAULT);
-  mythread->start(QThread::HighestPriority);
+    framesBox->setValue(1000);
+    mythread->start(QThread::HighestPriority);
     return a.exec();
 }

@@ -30,6 +30,7 @@ signals:
 public slots:
     void saveFrames();
     void setExposure(int val);
+    void setFramesToSave(int val);
 
 private:
     void run();
@@ -44,7 +45,7 @@ private:
     QString mystring;
     float fps;
     bool save_frames= FALSE;
-    int framenum;
+    int framenum, framenum_max;
 
 
 };
