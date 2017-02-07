@@ -46,7 +46,7 @@ private:
     float fps;
     bool save_frames= FALSE;
     int framenum, framenum_max;
-
+    int offset;
 
 };
 

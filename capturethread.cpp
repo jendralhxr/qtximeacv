@@ -57,6 +57,27 @@ void captureThread::run(){
 //     else if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(image.bp); // passing pointer isn't good idea as capture buffer may be changed
        else if (!(frames_in_sec%RENDER_INTERVAL)){
             cvtColor(*frame, *frame_color, CV_BayerBG2BGR);
+
+            // color correction
+            offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
+restofimage:
+            switch(offset%3){
+            case 0: // blue
+                frame_color->data[offset] = frame_color->data[offset] * 2.4;
+                break;
+            case 1: // green
+                frame_color->data[offset] = frame_color->data[offset] * 1.33;
+                break;
+            case 2: // red
+                frame_color->data[offset] = frame_color->data[offset] * 1.43;
+                break;
+            default:
+                break;
+            }
+            offset--;
+            if (offset>-1) goto restofimage;
+
+
             assert(frame_color->isContinuous()); // make sure the memory is contiguous
             temp = QImage(frame_color->data, frame_color->cols, frame_color->rows, frame_color->cols*3, QImage::Format_RGB888);
             emit getImage(temp);
@@ -82,6 +103,24 @@ void captureThread::run(){
    for (int framenum=0; framenum<framenum_max; framenum++){
         qDebug("saving %d",framenum);
         cvtColor(captured_frames[framenum], *frame_color, CV_BayerBG2BGR);
+        // color correction
+        offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
+restofimage:
+        switch(offset%3){
+        case 0: // blue
+            frame_color->data[offset] = frame_color->data[offset] * 2.4;
+            break;
+        case 1: // green
+            frame_color->data[offset] = frame_color->data[offset] * 1.33;
+            break;
+        case 2: // red
+            frame_color->data[offset] = frame_color->data[offset] * 1.43;
+            break;
+        default:
+            break;
+        }
+        offset--;
+        if (offset>-1) goto restofimage;
         //opencv saving is faster
         sprintf(filename,"xi%04d.png",framenum);
         imwrite(filename, *frame_color);
