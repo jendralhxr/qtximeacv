@@ -1,5 +1,5 @@
 // compile against Ximea M3 API and OpenCV
-// g++ test.cpp -lm3api `pkg-config --libs opencv`
+// g++ multiproc.cpp -lm3api `pkg-config --libs opencv`
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,6 +79,7 @@ int main(int argc, char **argv){
 		// opencv stuff    
 		using namespace cv;
 		Mat *frame, *frame_color; // for raw (gbgr Bayer) and color
+		int offset;
 	
 		frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
 		frame_color= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3);           
@@ -96,6 +97,22 @@ int main(int argc, char **argv){
 			//render routine starts
 			memcpy(frame->data, buffer, IMAGE_WIDTH*IMAGE_HEIGHT);
 			cvtColor(*frame, *frame_color, CV_BayerBG2BGR);
+			
+			// bitwise color compenstation
+			offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
+			restofimage:
+				switch(offset%3){
+					case 0: // blue; 2.5x
+					frame_color->data[offset] = \
+					frame_color->data[offset]<<1 + frame_color->data[offset]>>1;			
+						break;
+					default: // green, red; 1.5
+					frame_color->data[offset] += frame_color->data[offset]>>1;			
+						break;
+					}
+			offset--;
+			if (offset>-1) goto restofimage;
+			
 			imshow("display", *frame_color);
 			waitKey(1);
 			//render routine ends	
