@@ -105,7 +105,7 @@ restofimage:
         cvtColor(captured_frames[framenum], *frame_color, CV_BayerBG2BGR);
         // color correction
         offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
-restofimage:
+saveimage:
         switch(offset%3){
         case 0: // blue
             frame_color->data[offset] = frame_color->data[offset] * 2.4;
@@ -120,7 +120,7 @@ restofimage:
             break;
         }
         offset--;
-        if (offset>-1) goto restofimage;
+        if (offset>-1) goto saveimage;
         //opencv saving is faster
         sprintf(filename,"xi%04d.png",framenum);
         imwrite(filename, *frame_color);
