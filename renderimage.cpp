@@ -15,11 +15,11 @@ void renderImage::receiveBitmap(void *buffer){
     setPixmap(QPixmap::fromImage(QImage(static_cast<unsigned char*>(buffer), \
        IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888).rgbSwapped()));
     update();
-
 }
 
 void renderImage::receiveBitmap(QImage image){
-    setPixmap(QPixmap::fromImage(image.rgbSwapped()));
+    //setPixmap(QPixmap::fromImage(image.rgbSwapped())); // if color
+    setPixmap(QPixmap::fromImage(image)); // if grayscale
     update();
 }
 

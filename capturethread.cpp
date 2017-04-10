@@ -7,6 +7,7 @@
 #define IMAGE_HEIGHT 480
 #define EXPOSURE 3000 // us
 #define FRAMENUM_MAX 2000
+#define GRAYSCALE
 
 using namespace cv;
 
@@ -30,7 +31,8 @@ captureThread::captureThread()
     xiSetParamInt(handle, XI_PRM_AUTO_WB, 0);
  //   xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
  //   xiSetParamInt(handle, XI_PRM_FRAMERATE, 90);// Requested fps
-    frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
+  //frame = new Mat(IMAGE_HEIGHT, 3*IMAGE_WIDTH, CV_8UC1); // color
+    frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1); // grayscale
     frame_color= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3);
     captured_frames= new Mat [FRAMENUM_MAX];
     image.size = sizeof(XI_IMG);
@@ -52,24 +54,29 @@ void captureThread::run(){
        //temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, QImage::Format_Grayscale8);
        memcpy(frame->data, image.bp, IMAGE_WIDTH*IMAGE_HEIGHT);
 
-       // whether save or display
-       if (save_frames) captured_frames[framenum]= frame->clone();
-//     else if (!(frames_in_sec%RENDER_INTERVAL)) emit getImage(image.bp); // passing pointer isn't good idea as capture buffer may be changed
-       else if (!(frames_in_sec%RENDER_INTERVAL)){
-            cvtColor(*frame, *frame_color, CV_BayerBG2BGR);
-
+       // passing pointer to image.bp isn't good idea as capture buffer may be changed
+       if (save_frames) captured_frames[framenum]= frame->clone(); // whether save or display
+     // render grayscale
+       else if (!(frames_in_sec%RENDER_INTERVAL)) {
+           assert(frame_color->isContinuous()); // make sure the memory is contiguous
+           temp = QImage(frame->data, frame->cols, frame->rows, frame->cols, QImage::Format_Grayscale8);
+           emit getImage(temp);
+       }
+    // render color
+       /*       else if (!(frames_in_sec%RENDER_INTERVAL)){
+            //cvtColor(*frame, *frame_color, CV_BayerBG2BGR);
             // color correction
             offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
 restofimage:
             switch(offset%3){
             case 0: // blue
-                frame_color->data[offset] = frame_color->data[offset] * 2.4;
+                frame_color->data[offset] = char(frame_color->data[offset] * 2.4);
                 break;
             case 1: // green
-                frame_color->data[offset] = frame_color->data[offset] * 1.33;
+                frame_color->data[offset] = char(frame_color->data[offset] * 1.33);
                 break;
             case 2: // red
-                frame_color->data[offset] = frame_color->data[offset] * 1.43;
+                frame_color->data[offset] = char(frame_color->data[offset] * 1.43);
                 break;
             default:
                 break;
@@ -77,12 +84,11 @@ restofimage:
             offset--;
             if (offset>-1) goto restofimage;
 
-
             assert(frame_color->isContinuous()); // make sure the memory is contiguous
             temp = QImage(frame_color->data, frame_color->cols, frame_color->rows, frame_color->cols*3, QImage::Format_RGB888);
             emit getImage(temp);
         }
-
+*/
        // timing, 1 s interval
        time_stop = QDateTime::currentDateTime().toMSecsSinceEpoch();
        time_lapsed= time_stop- time_start;
@@ -102,28 +108,34 @@ restofimage:
    if (save_frames){
    for (int framenum=0; framenum<framenum_max; framenum++){
         qDebug("saving %d",framenum);
+
+        /*
+        // saving color frames
         cvtColor(captured_frames[framenum], *frame_color, CV_BayerBG2BGR);
         // color correction
         offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
 saveimage:
         switch(offset%3){
         case 0: // blue
-            frame_color->data[offset] = frame_color->data[offset] * 2.4;
+            frame_color->data[offset] = char(frame_color->data[offset] * 2.4);
             break;
         case 1: // green
-            frame_color->data[offset] = frame_color->data[offset] * 1.33;
+            frame_color->data[offset] = char(frame_color->data[offset] * 1.33);
             break;
         case 2: // red
-            frame_color->data[offset] = frame_color->data[offset] * 1.43;
+            frame_color->data[offset] = char(frame_color->data[offset] * 1.43);
             break;
         default:
             break;
         }
         offset--;
         if (offset>-1) goto saveimage;
-        //opencv saving is faster
+*/
+
+        //imwrite is faster compared to QImage.save
         sprintf(filename,"xi%04d.png",framenum);
-        imwrite(filename, *frame_color);
+        //imwrite(filename, *frame_color); // color
+        imwrite(filename, captured_frames[framenum]);
     }
    save_frames= FALSE;
    goto here;
