@@ -9,7 +9,7 @@
 #include "capturethread.h"
 #include "renderimage.h"
 
-#define EXPOSURE_DEFAULT 2000
+#define EXPOSURE_DEFAULT 8000
 #define EXPOSURE_MIN 100
 #define EXPOSURE_MAX 200000
 
@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
 
     //QObject::connect(mythread, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
     QObject::connect(mythread, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
+
     QObject::connect(exposureBox, SIGNAL(valueChanged(int)), mythread, SLOT(setExposure(int)));
     QObject::connect(saveButton, SIGNAL(pressed()), mythread, SLOT(saveFrames()));
     QObject::connect(mythread, SIGNAL(getFPS(int)), rateBox, SLOT(setValue(int)));

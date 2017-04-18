@@ -1,14 +1,13 @@
 #include "renderimage.h"
 #include <stdlib.h>
-#define IMAGE_WIDTH 640
+#define IMAGE_WIDTH 480
 #define IMAGE_HEIGHT 480
 
 renderImage::renderImage(QWidget *parent) : QLabel(parent){
     //canvas =  new QImage(IMAGE_WIDTH,IMAGE_HEIGHT,QImage::Format_RGB32);
     //canvas->fill(IMAGE_WIDTH*IMAGE_HEIGHT);
     //setPixmap(QPixmap::fromImage(*canvas));
-    setMinimumHeight(IMAGE_HEIGHT);
-    setMinimumWidth(IMAGE_WIDTH);
+    setMaximumSize(IMAGE_WIDTH, IMAGE_HEIGHT);
 }
 
 void renderImage::receiveBitmap(void *buffer){
@@ -18,8 +17,9 @@ void renderImage::receiveBitmap(void *buffer){
 }
 
 void renderImage::receiveBitmap(QImage image){
-    //setPixmap(QPixmap::fromImage(image.rgbSwapped())); // if color
-    setPixmap(QPixmap::fromImage(image)); // if grayscale
+//    setPixmap(QPixmap::fromImage(image.rgbSwapped())); // no scaling
+    setPixmap(QPixmap::fromImage(image).scaledToWidth(IMAGE_WIDTH,Qt::FastTransformation)); // if color
+    //setPixmap(QPixmap::fromImage(image).scaledToWidth(IMAGE_WIDTH,Qt::FastTransformation)); // if grayscale, didnt bother with RGB BGR
     update();
 }
 

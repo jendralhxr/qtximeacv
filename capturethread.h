@@ -35,7 +35,7 @@ public slots:
 private:
     void run();
     XI_IMG image;
-    Mat *frame, *frame_color;
+    Mat *frame, *frame_color, *frame_buffer;
     Mat *captured_frames;
     HANDLE handle = NULL;
     XI_RETURN stat = XI_OK;
