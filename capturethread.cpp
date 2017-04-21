@@ -105,7 +105,7 @@ restofimage:
             frames_in_sec= 0;
             //xiGetParamFloat(handle, XI_PRM_FRAMERATE, &fps); //that fps thing
             //qDebug("fps-board %f",fps);
-
+            if (!save_frames) calculateCentroids();
        }
        else frames_in_sec++;
        if (!save_frames) framenum= 0;
@@ -166,4 +166,42 @@ void captureThread::setFramesToSave(int val){
 void captureThread::setExposure(int val){
     xiSetParamInt(handle, XI_PRM_EXPOSURE, val); // us
     qDebug("set exposure to %d",val);
+}
+
+int captureThread::calculateCentroids(){
+    bitwise_not(*frame_buffer, invert);
+    detector.detect(invert, keypoints);
+    //detector.detect(image, keypoints);
+
+    int n=0;
+    for (std::vector<KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end(); ++it){
+        //cout << it->pt.x  << ';' << it->pt.y << endl;
+        moment_x[n]= it->pt.x;
+        moment_y[n]= it->pt.y;
+        mass[n]= it->size;
+        n++;
+        } //  std::cout << ' ' << *it;
+
+    // little sorting
+    for (int i=n-1; i>=0; i--){
+        for (int j=i-1; j>=0; j--){
+            if (moment_x[i] > moment_x[j]){
+                moment_x_temp= moment_x[i];
+                moment_y_temp= moment_y[i];
+                mass_temp= mass[i];
+                moment_x[i]= moment_x[j];
+                moment_y[i]= moment_y[j];
+                mass[i]= mass[j];
+                moment_x[j]= moment_x_temp;
+                moment_y[j]= moment_y_temp;
+                mass[j]= mass_temp;
+                }
+            }
+        }
+
+    for (int i=n-1; i>=0; i--){
+        qDebug("%f %f\n",moment_x[i], moment_y[i]);
+    }
+    return(n);
+
 }

@@ -11,6 +11,8 @@
 #endif
 #include <opencv2/opencv.hpp>
 
+#define MAX_OBJECTS 32
+
 using namespace cv;
 
 class captureThread : public QThread
@@ -31,6 +33,7 @@ public slots:
     void saveFrames();
     void setExposure(int val);
     void setFramesToSave(int val);
+    int calculateCentroids();
 
 private:
     void run();
@@ -47,6 +50,13 @@ private:
     bool save_frames= FALSE;
     int framenum, framenum_max;
     int offset;
+    float moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
+    float moment_x_temp, moment_y_temp, mass_temp;
+    SimpleBlobDetector detector;
+
+    // Detect blobs.
+    std::vector<KeyPoint> keypoints;
+    Mat invert;
 
 };
 
