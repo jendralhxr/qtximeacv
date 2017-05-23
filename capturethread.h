@@ -4,8 +4,11 @@
 #include <QThread>
 #include <QImage>
 #include <QPixmap>
+#include <QFile>
 #ifdef __linux__
 #include <m3api/xiApi.h>
+#include <sys/time.h>
+#include <QTextStream>
 #elif _WIN32
 #include <xiApi.h>
 #endif
@@ -52,9 +55,12 @@ private:
     int offset;
     float moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
     float moment_x_temp, moment_y_temp, mass_temp;
+    struct timeval *timestamp;
     SimpleBlobDetector detector;
+    // time logging purpose
+    QFile *logfile;
+    QTextStream *streamout;
 
-    // Detect blobs.
     std::vector<KeyPoint> keypoints;
     Mat invert;
 

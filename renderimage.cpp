@@ -1,7 +1,8 @@
 #include "renderimage.h"
 #include <stdlib.h>
-#define IMAGE_WIDTH 480
-#define IMAGE_HEIGHT 480
+#define IMAGE_WIDTH 640
+#define IMAGE_HEIGHT 640
+#define COLOR
 
 renderImage::renderImage(QWidget *parent) : QLabel(parent){
     //canvas =  new QImage(IMAGE_WIDTH,IMAGE_HEIGHT,QImage::Format_RGB32);

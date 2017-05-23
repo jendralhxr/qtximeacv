@@ -9,8 +9,8 @@
 #include "capturethread.h"
 #include "renderimage.h"
 
-#define EXPOSURE_DEFAULT 8000
-#define EXPOSURE_MIN 100
+#define EXPOSURE_DEFAULT 2000
+#define EXPOSURE_MIN 10
 #define EXPOSURE_MAX 200000
 
 int main(int argc, char *argv[])
@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
     QLabel *framestoSave = new QLabel("Saved Frames");
     QSpinBox *framesBox = new QSpinBox();
     framesBox->setMaximum(2000);
+    framesBox->setMinimum(2);
 
     QPushButton *saveButton= new QPushButton("save frames");
 
