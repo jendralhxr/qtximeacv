@@ -6,16 +6,17 @@
 #define IMAGE_WIDTH 2048
 #define IMAGE_HEIGHT 350
 #define EXPOSURE 2000 // us
-#define FRAMENUM_MAX 2000
+#define FRAMENUM_MAX 4000
 // pick one of these two
 //#define HEAD_COLOR
 #define HEAD_MONOCHROME
-
 
 using namespace cv;
 
 char filename[20];
 int timestamp_temp;
+float min_fps, max_fps;
+
 /*
 captureThread::captureThread(QObject *parent) : QThread(parent){
 }*/
@@ -24,17 +25,24 @@ captureThread::captureThread()
 {
     framenum_max= FRAMENUM_MAX;
     if(xiOpenDevice(0, &handle) != XI_OK) exit(1);
-    xiSetParamInt(handle, XI_PRM_EXPOSURE, EXPOSURE); // us
     xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
     //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
     xiSetParamInt(handle, XI_PRM_OFFSET_X, 0);
     xiSetParamInt(handle, XI_PRM_OFFSET_Y, 0); // 824
-    xiSetParamInt(handle, XI_PRM_WIDTH, IMAGE_WIDTH);
+
+
+     xiSetParamInt(handle, XI_PRM_WIDTH, IMAGE_WIDTH);
     xiSetParamInt(handle, XI_PRM_HEIGHT, IMAGE_HEIGHT);
-    xiSetParamInt(handle, XI_PRM_AUTO_WB, 0);
-    //   xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
-    //   xiSetParamInt(handle, XI_PRM_FRAMERATE, 90);// Requested fps
+    xiSetParamInt(handle, XI_PRM_EXPOSURE, EXPOSURE); // us
+    //xiSetParamInt(handle, XI_PRM_AUTO_WB, 0);
+    // simply desperate to get it dialed in
+
+    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
+    xiSetParamInt(handle, XI_PRM_FRAMERATE, 480);// Requested fps
+
+    //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
+
     frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
     frame_buffer= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
     frame_color= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3);
@@ -52,7 +60,6 @@ captureThread::captureThread()
     logfile =  new QFile();
     logfile->setFileName("/me/timing.txt");
     streamout = new QTextStream(logfile);
-
 }
 
 void captureThread::run(){
@@ -112,20 +119,23 @@ restofimage:
         }
 #endif
 
-        // timing, 1 s interval
-        time_stop = QDateTime::currentDateTime().toMSecsSinceEpoch();
-        time_lapsed= time_stop- time_start;
-        if (time_lapsed > 1000){ // 1 sec lapsed
-            emit getFPS(frames_in_sec);
-            qDebug("fps-counter %d",frames_in_sec);
-            time_start= time_stop;
-            frames_in_sec= 0;
-            //xiGetParamFloat(handle, XI_PRM_FRAMERATE, &fps); //that fps thing
-            //qDebug("fps-board %f",fps);
-            //if (!save_frames) calculateCentroids();
+        if (!save_frames) {
+            // timing, 1 s interval
+            xiGetParamFloat(handle, XI_PRM_FRAMERATE, &fps); //that fps thing
+
+            time_stop = QDateTime::currentDateTime().toMSecsSinceEpoch();
+            time_lapsed= time_stop- time_start;
+            if (time_lapsed > 1000){ // 1 sec lapsed
+                emit getFPS(frames_in_sec);
+                qDebug("fps-counter %d, %f",frames_in_sec, fps);
+                time_start= time_stop;
+                frames_in_sec= 0;
+                //qDebug("fps-board %f",fps);
+                //if (!save_frames) calculateCentroids();
+            }
+            else frames_in_sec++;
+            framenum= 0;
         }
-        else frames_in_sec++;
-        if (!save_frames) framenum= 0;
         //else qDebug("buffering %d/%d",framenum, framenum_max);
     }
 
@@ -163,7 +173,7 @@ saveimage:
 #endif
 
 #ifdef HEAD_MONOCHROME
-            // imwrite(filename, captured_frames[framenum]); // grayscale camera head
+            imwrite(filename, captured_frames[framenum]); // grayscale camera head
 #endif
             timestamp_temp = timestamp[framenum].tv_usec - timestamp[framenum-1].tv_usec;
             if (timestamp_temp<0) timestamp_temp+=1e6;

@@ -10,7 +10,7 @@
 #include "renderimage.h"
 
 #define EXPOSURE_DEFAULT 2000
-#define EXPOSURE_MIN 10
+#define EXPOSURE_MIN 28
 #define EXPOSURE_MAX 200000
 
 int main(int argc, char *argv[])
@@ -27,12 +27,12 @@ int main(int argc, char *argv[])
 
     QLabel *rateLabel = new QLabel("Frame rate");
     QSpinBox *rateBox = new QSpinBox();
-    rateBox->setMaximum(600);
+    rateBox->setMaximum(2000);
     rateBox->setReadOnly(true);
 
     QLabel *framestoSave = new QLabel("Saved Frames");
     QSpinBox *framesBox = new QSpinBox();
-    framesBox->setMaximum(2000);
+    framesBox->setMaximum(4000);
     framesBox->setMinimum(2);
 
     QPushButton *saveButton= new QPushButton("save frames");
