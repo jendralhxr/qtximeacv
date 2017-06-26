@@ -6,7 +6,8 @@
 #define IMAGE_WIDTH 2048
 #define IMAGE_HEIGHT 350
 #define EXPOSURE 2000 // us
-#define FRAMENUM_MAX 4000
+#define FPS_REQUESTED 480
+#define FRAMENUM_MAX 3000
 // pick one of these two
 //#define HEAD_COLOR
 #define HEAD_MONOCHROME
@@ -30,18 +31,19 @@ captureThread::captureThread()
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
     xiSetParamInt(handle, XI_PRM_OFFSET_X, 0);
     xiSetParamInt(handle, XI_PRM_OFFSET_Y, 0); // 824
-
-
-     xiSetParamInt(handle, XI_PRM_WIDTH, IMAGE_WIDTH);
+    xiSetParamInt(handle, XI_PRM_WIDTH, IMAGE_WIDTH);
     xiSetParamInt(handle, XI_PRM_HEIGHT, IMAGE_HEIGHT);
     xiSetParamInt(handle, XI_PRM_EXPOSURE, EXPOSURE); // us
     //xiSetParamInt(handle, XI_PRM_AUTO_WB, 0);
     // simply desperate to get it dialed in
 
-    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
-    xiSetParamInt(handle, XI_PRM_FRAMERATE, 480);// Requested fps
+    xiSetParamInt(handle, XI_PRM_GPO_SELECTOR, 1);
+    xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
 
+    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
+    xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
     //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
+    //xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
 
     frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
     frame_buffer= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
@@ -75,7 +77,10 @@ here:
         // passing pointer to image.bp isn't good idea as capture buffer may be changed
         if (save_frames) { // whether save or display
             captured_frames[framenum]= frame->clone();
-            gettimeofday(&timestamp[framenum],NULL);
+            //gettimeofday(&timestamp[framenum],NULL);
+            timestamp[framenum].tv_sec= image.tsSec;
+            timestamp[framenum].tv_usec= image.tsUSec;
+
         }
 
 #ifdef HEAD_MONOCHROME
@@ -173,7 +178,7 @@ saveimage:
 #endif
 
 #ifdef HEAD_MONOCHROME
-            imwrite(filename, captured_frames[framenum]); // grayscale camera head
+      //      imwrite(filename, captured_frames[framenum]); // grayscale camera head
 #endif
             timestamp_temp = timestamp[framenum].tv_usec - timestamp[framenum-1].tv_usec;
             if (timestamp_temp<0) timestamp_temp+=1e6;

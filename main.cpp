@@ -12,6 +12,7 @@
 #define EXPOSURE_DEFAULT 2000
 #define EXPOSURE_MIN 28
 #define EXPOSURE_MAX 200000
+#define FRAMENUM_MAX 3000
 
 int main(int argc, char *argv[])
 {
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 
     QLabel *framestoSave = new QLabel("Saved Frames");
     QSpinBox *framesBox = new QSpinBox();
-    framesBox->setMaximum(4000);
+    framesBox->setMaximum(FRAMENUM_MAX);
     framesBox->setMinimum(2);
 
     QPushButton *saveButton= new QPushButton("save frames");
@@ -59,8 +60,7 @@ int main(int argc, char *argv[])
     display->setLayout(simplelayout);
     display->show();
 
-    exposureBox->setValue(EXPOSURE_DEFAULT);
-//    mythread->setExposure(EXPOSURE_DEFAULT);
+//    exposureBox->setValue(EXPOSURE_DEFAULT);
     framesBox->setValue(1000);
     mythread->start(QThread::HighestPriority);
     return a.exec();
