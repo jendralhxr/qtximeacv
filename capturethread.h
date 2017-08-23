@@ -25,6 +25,7 @@ class captureThread : public QThread
 public:
    //explicit captureThread(QObject *parent = 0);
    captureThread();
+   captureThread(int dev);
 
 signals:
     void getFPS(int fps);
@@ -60,10 +61,11 @@ private:
     // time logging purpose
     QFile *logfile;
     QTextStream *streamout;
+    int clock_freq;
 
     std::vector<KeyPoint> keypoints;
     Mat invert;
-
+    int devicenum;
 };
 
 

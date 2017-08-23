@@ -17,7 +17,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    captureThread *mythread = new captureThread();
+    captureThread *cameraHead1 = new captureThread(0);
     renderImage *camimage= new renderImage();
     //camimage->show();
 
@@ -38,13 +38,13 @@ int main(int argc, char *argv[])
 
     QPushButton *saveButton= new QPushButton("save frames");
 
-    //QObject::connect(mythread, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
-    QObject::connect(mythread, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
+    //QObject::connect(cameraHead1, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
+    QObject::connect(cameraHead1, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
 
-    QObject::connect(exposureBox, SIGNAL(valueChanged(int)), mythread, SLOT(setExposure(int)));
-    QObject::connect(saveButton, SIGNAL(pressed()), mythread, SLOT(saveFrames()));
-    QObject::connect(mythread, SIGNAL(getFPS(int)), rateBox, SLOT(setValue(int)));
-    QObject::connect(framesBox, SIGNAL(valueChanged(int)), mythread, SLOT(setFramesToSave(int)));
+    QObject::connect(exposureBox, SIGNAL(valueChanged(int)), cameraHead1, SLOT(setExposure(int)));
+    QObject::connect(saveButton, SIGNAL(pressed()), cameraHead1, SLOT(saveFrames()));
+    QObject::connect(cameraHead1, SIGNAL(getFPS(int)), rateBox, SLOT(setValue(int)));
+    QObject::connect(framesBox, SIGNAL(valueChanged(int)), cameraHead1, SLOT(setFramesToSave(int)));
 
     QGridLayout *simplelayout= new QGridLayout();
     simplelayout->addWidget(camimage, 0, 0, 1, 7, Qt::AlignHCenter);
@@ -62,6 +62,6 @@ int main(int argc, char *argv[])
 
 //    exposureBox->setValue(EXPOSURE_DEFAULT);
     framesBox->setValue(1000);
-    mythread->start(QThread::HighestPriority);
+    cameraHead1->start(QThread::HighestPriority);
     return a.exec();
 }
