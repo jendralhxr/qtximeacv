@@ -192,7 +192,7 @@ restofimage:
     if (save_frames){
         for (int framenum=0; framenum<framenum_max; framenum++){
             qDebug("saving %d",framenum);
-            sprintf(filename,"/me/xi%04d.tif",framenum);
+            sprintf(filename,"/me/xi%d%04d.tif",devicenum,framenum);
 
 #ifdef HEAD_COLOR
             // saving frames
