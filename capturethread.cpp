@@ -25,7 +25,7 @@ captureThread::captureThread(QObject *parent) : QThread(parent){
 captureThread::captureThread() // no argument
 {
     framenum_max= FRAMENUM_MAX;
-    if(xiOpenDevice(0, &handle) != XI_OK) exit(1); // device num
+    if(xiOpenDevice(devicenum, &handle) != XI_OK) exit(1); // device num
     xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
     //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
@@ -66,45 +66,7 @@ captureThread::captureThread() // no argument
 
 captureThread::captureThread(int dev){
     devicenum= dev;
-    framenum_max= FRAMENUM_MAX;
-    if(xiOpenDevice(devicenum, &handle) != XI_OK) exit(1); // device num
-    xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
-    //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
-    xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
-    xiSetParamInt(handle, XI_PRM_OFFSET_X, 0);
-    xiSetParamInt(handle, XI_PRM_OFFSET_Y, 0); // 824
-    xiSetParamInt(handle, XI_PRM_WIDTH, IMAGE_WIDTH);
-    xiSetParamInt(handle, XI_PRM_HEIGHT, IMAGE_HEIGHT);
-    xiSetParamInt(handle, XI_PRM_EXPOSURE, EXPOSURE); // us
-    //xiSetParamInt(handle, XI_PRM_AUTO_WB, 0);
-    // simply desperate to get it dialed in
-
-    xiSetParamInt(handle, XI_PRM_GPO_SELECTOR, 1);
-    xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
-
-    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
-    //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
-    xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
-    //xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
-
-    frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
-    frame_buffer= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
-    frame_color= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3);
-
-    captured_frames= new Mat [FRAMENUM_MAX];
-    timestamp = new struct timeval [FRAMENUM_MAX];
-    image.size = sizeof(XI_IMG);
-    image.bp = NULL;
-    image.bp_size = 0;
-    //buffer_size = IMAGE_WIDTH*IMAGE_HEIGHT*3;
-    emit getImageSize(image.width, image.height);
-    qDebug("size %d %d",image.width, image.height);
-    //captured_frames = new QImage[FRAMENUM_MAX];
-
-    logfile =  new QFile();
-    logfile->setFileName("/me/timing.txt");
-    streamout = new QTextStream(logfile);
-
+    captureThread();
 }
 
 void captureThread::run(){
