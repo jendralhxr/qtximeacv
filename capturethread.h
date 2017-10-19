@@ -5,10 +5,10 @@
 #include <QImage>
 #include <QPixmap>
 #include <QFile>
+#include <QTextStream>
 #ifdef __linux__
 #include <m3api/xiApi.h>
 #include <sys/time.h>
-#include <QTextStream>
 #elif _WIN32
 #include <xiApi.h>
 #endif
@@ -40,6 +40,8 @@ public slots:
     int calculateCentroids();
 
 private:
+
+    char devicenum;
     void run();
     XI_IMG image;
     Mat *frame, *frame_color, *frame_buffer;
@@ -65,7 +67,6 @@ private:
 
     std::vector<KeyPoint> keypoints;
     Mat invert;
-    int devicenum;
 };
 
 

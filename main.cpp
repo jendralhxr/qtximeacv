@@ -11,8 +11,8 @@
 
 #define EXPOSURE_DEFAULT 2000
 #define EXPOSURE_MIN 28
-#define EXPOSURE_MAX 200000
-#define FRAMENUM_MAX 3000
+#define EXPOSURE_MAX 2000000
+#define FRAMENUM_MAX 4000
 
 int main(int argc, char *argv[])
 {
