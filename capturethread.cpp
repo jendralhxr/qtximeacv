@@ -4,9 +4,9 @@
 
 #define RENDER_INTERVAL 10
 #define IMAGE_WIDTH 2048
-#define IMAGE_HEIGHT 1024
+#define IMAGE_HEIGHT 752//752
 #define EXPOSURE 2000 // us
-#define FPS_REQUESTED 90
+#define FPS_REQUESTED 240
 #define FRAMENUM_MAX 3000
 // pick one of these two
 //#define HEAD_COLOR
@@ -37,13 +37,14 @@ captureThread::captureThread() // no argument
     //xiSetParamInt(handle, XI_PRM_AUTO_WB, 0);
     // simply desperate to get it dialed in
 
-    xiSetParamInt(handle, XI_PRM_GPO_SELECTOR, 1);
-    xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
+//    xiSetParamInt(handle, XI_PRM_GPO_SELECTOR, 1);
+ //   xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
 
-    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
-    //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
-    //xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
-    //xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
+    //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
+    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
+//    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
+    xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
+//    xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
 
     frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
     frame_buffer= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
