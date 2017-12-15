@@ -4,7 +4,7 @@
 
 #define RENDER_INTERVAL 10
 #define IMAGE_WIDTH 2048
-#define IMAGE_HEIGHT 752//752
+#define IMAGE_HEIGHT 762 //752, 762, 504
 #define EXPOSURE 2000 // us
 #define FPS_REQUESTED 240
 #define FRAMENUM_MAX 3000
@@ -16,6 +16,7 @@ using namespace cv;
 
 char filename[20];
 int timestamp_temp;
+
 float min_fps, max_fps;
 
 /*
@@ -26,6 +27,9 @@ captureThread::captureThread() // no argument
 {
 
     framenum_max= FRAMENUM_MAX;
+    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
+    xiSetParamInt(handle, XI_PRM_FRAMERATE, 240);// Requested fps`
+
     xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
     //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
@@ -38,11 +42,10 @@ captureThread::captureThread() // no argument
     // simply desperate to get it dialed in
 
 //    xiSetParamInt(handle, XI_PRM_GPO_SELECTOR, 1);
- //   xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
-
+//   xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
     //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
+    xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
     xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
-//    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
     xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
 //    xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
 

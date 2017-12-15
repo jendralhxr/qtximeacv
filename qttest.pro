@@ -49,12 +49,14 @@ else:CONFIG(debug, debug|release): LIBS += -LC:/Qwt/lib/ -lqwtd
 SOURCES += main.cpp\
     capturethread.cpp \
     captureplot.cpp \
-    renderimage.cpp
+    renderimage.cpp \
+    marker.cpp
 
 HEADERS += \
     capturethread.h \
     captureplot.h \
-    renderimage.h
+    renderimage.h \
+    marker.h
 
 
 

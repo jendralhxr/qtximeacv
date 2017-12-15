@@ -13,6 +13,7 @@
 #include <xiApi.h>
 #endif
 #include <opencv2/opencv.hpp>
+#include <marker.h>
 
 #define MAX_OBJECTS 32
 
@@ -67,6 +68,7 @@ private:
 
     std::vector<KeyPoint> keypoints;
     Mat invert;
+    marker markers[18];
 };
 
 
