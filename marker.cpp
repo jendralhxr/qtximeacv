@@ -17,7 +17,7 @@ int marker::getMaximumIntensity(){
     return(bin_maximum);
 }
 
-double marker::getAverageIntensity(int threshold){
+double marker::getAverageIntensity(){
     double temp=0, count=0;
     for (int i=threshold; i<256; i++){
         temp+= bin[i]*i;
@@ -42,14 +42,14 @@ int marker::getHorizontalWidth(){
 
 void marker::addPixel(int x, int y, int val){
     // just for checking
-    if ((x>x_start) && (x<x_end) && (y>y_start) && (y<y_end)){
+    //if ((x>x_start) && (x<x_end) && (y>y_start) && (y<y_end)){
         bin[val]++;
         if (val>bin_maximum) bin_maximum= val;
         if (val>threshold) area++;
-    }
+    //}
 }
 
-void marker::setThreshold(unsigned int val){
+void marker::setThreshold(int val){
     threshold= val;
 }
 

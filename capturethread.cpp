@@ -11,6 +11,7 @@
 // pick one of these two
 //#define HEAD_COLOR
 #define HEAD_MONOCHROME
+#define MARKERS_COUNT 18
 
 using namespace cv;
 
@@ -132,10 +133,50 @@ here:
 
 #ifdef HEAD_MONOCHROME
         // render grayscale
-        else if (!(frames_in_sec%RENDER_INTERVAL)) {
+        else if ((frames_in_sec%RENDER_INTERVAL)==0) {
             assert(frame_color->isContinuous()); // make sure the memory is contiguous
             temp = QImage(frame->data, frame->cols, frame->rows, frame->cols, QImage::Format_Grayscale8);
             emit getImage(temp);
+        }
+        // update markers
+        else if(frames_in_sec==1){
+            for (int i=0; i<MARKERS_COUNT; i++) markers[i].reset();
+            offset= IMAGE_HEIGHT * IMAGE_WIDTH -1;
+            woho:
+            temp_x= offset % IMAGE_WIDTH;
+            temp_y= offset / IMAGE_WIDTH;
+            // right side markers
+            // marker0
+            if (temp_y<360){
+                if (temp_x>1660) markers[0].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1354) markers[1].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1126) markers[2].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>920) markers[3].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>744) markers[4].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>582) markers[5].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>426) markers[6].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>270) markers[7].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>100) markers[8].addPixel(temp_x, temp_y, frame->data[offset]);
+            }
+            // left side markers
+            else{
+                if (temp_x>1508) markers[9].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1212) markers[10].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1014) markers[11].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>838) markers[12].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>670) markers[13].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>518) markers[14].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>354) markers[15].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>190) markers[16].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>22) markers[17].addPixel(temp_x, temp_y, frame->data[offset]);
+                }
+            offset--;
+            if (offset) goto woho;
+
+            // verbose output
+            for (int i=0; i<MARKERS_COUNT; i++)
+                qDebug("marker%d: max %d; avg %.2f; width %.2f", i, markers[i].getMaximumIntensity(), \
+                       markers[i].getAverageIntensity(), markers[i].getCircleWidth());
         }
 #endif
 
@@ -298,4 +339,9 @@ int captureThread::calculateCentroids(){
     }
     return(n);
 
+}
+
+void captureThread::setThreshold(int val){
+    qDebug("threshold set to %d", val);
+    for (int i=0; i<MARKERS_COUNT; i++) markers[i].setThreshold(val);
 }

@@ -38,6 +38,7 @@ public slots:
     void saveFrames();
     void setExposure(int val);
     void setFramesToSave(int val);
+    void setThreshold(int val);
     int calculateCentroids();
 
 private:
@@ -56,7 +57,6 @@ private:
     float fps;
     bool save_frames= FALSE;
     int framenum, framenum_max;
-    int offset;
     float moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
     float moment_x_temp, moment_y_temp, mass_temp;
     struct timeval *timestamp;
@@ -69,6 +69,7 @@ private:
     std::vector<KeyPoint> keypoints;
     Mat invert;
     marker markers[18];
+    int offset, temp_x, temp_y;
 };
 
 
