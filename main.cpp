@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 
     //QObject::connect(cameraHead1, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
     QObject::connect(cameraHead1, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
+    QObject::connect(cameraHead1, SIGNAL(getSeparator(int,int,int,int)), camimage, SLOT(drawMarkerLine(int,int,int,int)));
 
     QObject::connect(exposureBox, SIGNAL(valueChanged(int)), cameraHead1, SLOT(setExposure(int)));
     QObject::connect(saveButton, SIGNAL(pressed()), cameraHead1, SLOT(saveFrames()));
@@ -62,7 +63,6 @@ int main(int argc, char *argv[])
     simplelayout->addWidget(saveButton, 1 ,6, 1, 1, Qt::AlignHCenter);
     simplelayout->addWidget(thresholdLabel, 1, 7, 1, 1, Qt::AlignHCenter);
     simplelayout->addWidget(thresholdBox, 1 ,8, 1, 1, Qt::AlignHCenter);
-
 
     QWidget *display= new QWidget();
     display->setLayout(simplelayout);

@@ -33,6 +33,7 @@ signals:
     void getImage(void *buffer);
     void getImage(QImage image);
     void getImageSize(unsigned width, unsigned height);
+    void getSeparator(int x0, int y0, int x1, int y1);
 
 public slots:
     void saveFrames();

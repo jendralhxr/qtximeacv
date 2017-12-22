@@ -17,10 +17,13 @@ signals:
 public slots:
     void receiveBitmap(void *buffer);
     void receiveBitmap (QImage image);
+    void drawMarkerLine(int x0, int y0, int x1, int y1);
     int setFrameSize(unsigned width, unsigned height);
 
 private:
     unsigned frame_width, frame_height;
+    QPainter painter;
+    QImage canvas;
 };
 
 #endif // RENDERIMAGE_H

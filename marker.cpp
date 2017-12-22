@@ -41,12 +41,15 @@ int marker::getHorizontalWidth(){
 }
 
 void marker::addPixel(int x, int y, int val){
-    // just for checking
-    //if ((x>x_start) && (x<x_end) && (y>y_start) && (y<y_end)){
         bin[val]++;
         if (val>bin_maximum) bin_maximum= val;
         if (val>threshold) area++;
-    //}
+        if (val>threshold){
+            if (x > x_end) x_end= x;
+            if (x < x_start) x_start= x;
+            if (y > y_end) y_end= y;
+            if (y < y_start) y_start= y;
+        }
 }
 
 void marker::setThreshold(int val){
@@ -57,4 +60,10 @@ void marker::reset(){
     for (int i=0; i<256; i++) bin[i]= 0;
     area= 0;
     bin_maximum= 0;
+    x_start= 2048;
+    x_end= 0;
+    y_start = 2048;
+    y_end = 0;
+
+
 }

@@ -24,6 +24,7 @@ float min_fps, max_fps;
 captureThread::captureThread(QObject *parent) : QThread(parent){
 }*/
 
+
 captureThread::captureThread() // no argument
 {
 
@@ -137,6 +138,7 @@ here:
             assert(frame_color->isContinuous()); // make sure the memory is contiguous
             temp = QImage(frame->data, frame->cols, frame->rows, frame->cols, QImage::Format_Grayscale8);
             emit getImage(temp);
+            //emit getSeparator(0, 0, 360, 360);
         }
         // update markers
         else if(frames_in_sec==1){
@@ -147,36 +149,37 @@ here:
             temp_y= offset / IMAGE_WIDTH;
             // right side markers
             // marker0
-            if (temp_y<360){
-                if (temp_x>1660) markers[0].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1354) markers[1].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1126) markers[2].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>920) markers[3].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>744) markers[4].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>582) markers[5].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>426) markers[6].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>270) markers[7].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>100) markers[8].addPixel(temp_x, temp_y, frame->data[offset]);
+            if (temp_y<480){
+                     if (temp_x>1612) markers[0].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1374) markers[1].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1127) markers[2].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>912) markers[3].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>746) markers[4].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>594) markers[5].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>431) markers[6].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>290) markers[7].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>96) markers[8].addPixel(temp_x, temp_y, frame->data[offset]);
             }
             // left side markers
             else{
-                if (temp_x>1508) markers[9].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1212) markers[10].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1014) markers[11].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>838) markers[12].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>670) markers[13].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>518) markers[14].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>354) markers[15].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>190) markers[16].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>22) markers[17].addPixel(temp_x, temp_y, frame->data[offset]);
+                     if (temp_x>1660) markers[9].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1392) markers[10].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1144) markers[11].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>974) markers[12].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>768) markers[13].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>607) markers[14].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>457) markers[15].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>294) markers[16].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>96) markers[17].addPixel(temp_x, temp_y, frame->data[offset]);
                 }
             offset--;
             if (offset) goto woho;
 
             // verbose output
             for (int i=0; i<MARKERS_COUNT; i++)
-                qDebug("marker%d: max %d; avg %.2f; width %.2f", i, markers[i].getMaximumIntensity(), \
-                       markers[i].getAverageIntensity(), markers[i].getCircleWidth());
+                qDebug("marker%d: max %d; avg %.2f; width %.2f %d %d", i, markers[i].getMaximumIntensity(), \
+                       markers[i].getAverageIntensity(), markers[i].getCircleWidth(),\
+                       markers[i].getHorizontalWidth(), markers[i].getVerticalWidth());
         }
 #endif
 
@@ -209,6 +212,8 @@ restofimage:
             //assert(frame_color->isContinuous()); // make sure the memory is contiguous
             temp = QImage(frame_color->data, IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
             emit getImage(temp);
+            emit getSeparator(0, 0, 360, 360);
+
         }
 #endif
 
