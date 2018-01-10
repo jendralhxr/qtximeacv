@@ -64,6 +64,14 @@ void marker::reset(){
     x_end= 0;
     y_start = 2048;
     y_end = 0;
+}
 
+double marker::getCenterX(){
+    return ((x_start+x_end)/2);
+    // or any relevant centroid calculation
+}
 
+double marker::getCenterY(){
+    return ((y_start+y_end)/2);
+    // or any relevant centroid calculation
 }

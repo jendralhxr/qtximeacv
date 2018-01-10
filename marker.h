@@ -12,6 +12,8 @@ public:
     int getMaximumIntensity();
     double getAverageIntensity();
     double getCircleWidth();
+    double getCenterX();
+    double getCenterY();
     int getVerticalWidth();
     int getHorizontalWidth();
     void addPixel(int x, int y, int val);

@@ -15,8 +15,7 @@
 #include <opencv2/opencv.hpp>
 #include <marker.h>
 
-#define MAX_OBJECTS 32
-
+#define MARKERS_COUNT 20
 using namespace cv;
 
 class captureThread : public QThread
@@ -58,7 +57,7 @@ private:
     float fps;
     bool save_frames= FALSE;
     int framenum, framenum_max;
-    float moment_x[MAX_OBJECTS], moment_y[MAX_OBJECTS], mass[MAX_OBJECTS];
+    float moment_x[MARKERS_COUNT], moment_y[MARKERS_COUNT], mass[MARKERS_COUNT];
     float moment_x_temp, moment_y_temp, mass_temp;
     struct timeval *timestamp;
     SimpleBlobDetector detector;
@@ -69,7 +68,7 @@ private:
 
     std::vector<KeyPoint> keypoints;
     Mat invert;
-    marker markers[18];
+    marker markers[MARKERS_COUNT];
     int offset, temp_x, temp_y;
 };
 

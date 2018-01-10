@@ -11,7 +11,7 @@
 // pick one of these two
 //#define HEAD_COLOR
 #define HEAD_MONOCHROME
-#define MARKERS_COUNT 18
+
 
 using namespace cv;
 
@@ -149,37 +149,45 @@ here:
             temp_y= offset / IMAGE_WIDTH;
             // right side markers
             // marker0
-            if (temp_y<480){
-                     if (temp_x>1612) markers[0].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1374) markers[1].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1127) markers[2].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>912) markers[3].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>746) markers[4].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>594) markers[5].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>431) markers[6].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>290) markers[7].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>96) markers[8].addPixel(temp_x, temp_y, frame->data[offset]);
+            if (temp_y<170){
+                if (temp_x<470) markers[18].addPixel(temp_x, temp_y, frame->data[offset]);
+            }
+            if (temp_y>600){
+                if (temp_x<450) markers[19].addPixel(temp_x, temp_y, frame->data[offset]);
+            }
+            else if (temp_y<410){
+                     if (temp_x>1630) markers[0].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1363) markers[1].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1091) markers[2].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>890) markers[3].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>700) markers[4].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>560) markers[5].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>395) markers[6].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>233) markers[7].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>40) markers[8].addPixel(temp_x, temp_y, frame->data[offset]);
             }
             // left side markers
             else{
-                     if (temp_x>1660) markers[9].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1392) markers[10].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1144) markers[11].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>974) markers[12].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>768) markers[13].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>607) markers[14].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>457) markers[15].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>294) markers[16].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>96) markers[17].addPixel(temp_x, temp_y, frame->data[offset]);
+                     if (temp_x>1630) markers[9].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1363) markers[10].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>1091) markers[11].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>890) markers[12].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>700) markers[13].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>565) markers[14].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>395) markers[15].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>233) markers[16].addPixel(temp_x, temp_y, frame->data[offset]);
+                else if (temp_x>40) markers[17].addPixel(temp_x, temp_y, frame->data[offset]);
                 }
             offset--;
             if (offset) goto woho;
 
             // verbose output
-            for (int i=0; i<MARKERS_COUNT; i++)
+            for (int i=0; i<MARKERS_COUNT; i++){
                 qDebug("marker%d: max %d; avg %.2f; width %.2f %d %d", i, markers[i].getMaximumIntensity(), \
                        markers[i].getAverageIntensity(), markers[i].getCircleWidth(),\
                        markers[i].getHorizontalWidth(), markers[i].getVerticalWidth());
+            }
+            qDebug("reference: %.2f %.2f",markers[18].getCenterX(), markers[19].getCenterX());
         }
 #endif
 
