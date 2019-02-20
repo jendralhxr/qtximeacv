@@ -13,7 +13,7 @@ TARGET = qttest
 TEMPLATE = app
 
 unix{
-include(/usr/local/qwt/features/qwt.prf)
+#include(/usr/local/qwt/features/qwt.prf)
 #opencv
 INCLUDEPATH += /usr/include/opencv2
 LIBS += `pkg-config opencv --libs`
@@ -48,13 +48,11 @@ else:CONFIG(debug, debug|release): LIBS += -LC:/Qwt/lib/ -lqwtd
 
 SOURCES += main.cpp\
     capturethread.cpp \
-    captureplot.cpp \
     renderimage.cpp \
     marker.cpp
 
 HEADERS += \
     capturethread.h \
-    captureplot.h \
     renderimage.h \
     marker.h
 

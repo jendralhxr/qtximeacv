@@ -4,8 +4,8 @@
 #include <QLineF>
 
 #define IMAGE_WIDTH 1024
-#define IMAGE_HEIGHT 1024
-#define COLOR
+#define IMAGE_HEIGHT 700
+//#define COLOR
 
 renderImage::renderImage(QWidget *parent) : QLabel(parent){
     //canvas =  new QImage(IMAGE_WIDTH,IMAGE_HEIGHT,QImage::Format_RGB32);

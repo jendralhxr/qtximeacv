@@ -5,7 +5,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QSpinBox>
-#include "captureplot.h"
+// #include "captureplot.h"
 #include "capturethread.h"
 #include "renderimage.h"
 
@@ -13,7 +13,7 @@
 #define EXPOSURE_MIN 28
 #define EXPOSURE_MAX 2000000
 #define FRAMENUM_MAX 4000
-
+#define SAVE_FRAMES 3200
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -69,7 +69,8 @@ int main(int argc, char *argv[])
     display->show();
 
 //    exposureBox->setValue(EXPOSURE_DEFAULT);
-    framesBox->setValue(1000);
+    framesBox->setValue(SAVE_FRAMES);
+    exposureBox->setValue(EXPOSURE_DEFAULT);
     cameraHead1->start(QThread::HighestPriority);
     return a.exec();
 }

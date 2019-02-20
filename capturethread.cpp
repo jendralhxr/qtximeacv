@@ -4,20 +4,18 @@
 
 #define RENDER_INTERVAL 10
 #define IMAGE_WIDTH 2048
-#define IMAGE_HEIGHT 762 //752, 762, 504
+#define IMAGE_HEIGHT 752 //752, 762, 504
 #define EXPOSURE 2000 // us
 #define FPS_REQUESTED 240
-#define FRAMENUM_MAX 3000
+#define FRAMENUM_MAX 3200
 // pick one of these two
 //#define HEAD_COLOR
 #define HEAD_MONOCHROME
-
 
 using namespace cv;
 
 char filename[20];
 int timestamp_temp;
-
 float min_fps, max_fps;
 
 /*
@@ -30,7 +28,10 @@ captureThread::captureThread() // no argument
 
     framenum_max= FRAMENUM_MAX;
     xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
-    xiSetParamInt(handle, XI_PRM_FRAMERATE, 240);// Requested fps`
+    xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
+    xiSetParamInt(handle,XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);
+    xiSetParamInt(handle,XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE_LIMIT);
+    xiSetParamFloat(handle, XI_PRM_FRAMERATE, 10);
 
     xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
     //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
@@ -45,11 +46,11 @@ captureThread::captureThread() // no argument
 
 //    xiSetParamInt(handle, XI_PRM_GPO_SELECTOR, 1);
 //   xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
+    //xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
     //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
-    xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
+
     xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
     xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
-//    xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
 
     frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
     frame_buffer= new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
@@ -88,10 +89,13 @@ captureThread::captureThread(int dev){
 
     xiSetParamInt(handle, XI_PRM_GPO_SELECTOR, 1);
     xiSetParamInt(handle, XI_PRM_GPO_MODE,XI_GPO_EXPOSURE_PULSE);
+    xiGetParamFloat(handle, XI_PRM_FRAMERATE XI_PRM_INFO_MIN, &min_fps);
+    xiGetParamFloat(handle, XI_PRM_FRAMERATE XI_PRM_INFO_MAX, &max_fps);
+    qDebug("min max %f %f fps", min_fps, max_fps);
 
-    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
-    //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
-    //xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
+    //xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FREE_RUN );// maximum frame rate
+    xiSetParamInt(handle, XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE);// set acquisition to frame rate mode
+    xiSetParamInt(handle, XI_PRM_FRAMERATE, FPS_REQUESTED);// Requested fps`
     //xiSetParamInt(handle, XI_PRM_TRG_SOURCE, XI_TRG_EDGE_RISING);// maximum frame rateXI_TRG_SEL_FRAME_START
 
     frame = new Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1);
@@ -183,11 +187,11 @@ here:
 
             // verbose output
             for (int i=0; i<MARKERS_COUNT; i++){
-                qDebug("marker%d: max %d; avg %.2f; width %.2f %d %d", i, markers[i].getMaximumIntensity(), \
+                //qDebug("marker%d: max %d; avg %.2f; width %.2f %d %d", i, markers[i].getMaximumIntensity(), \
                        markers[i].getAverageIntensity(), markers[i].getCircleWidth(),\
                        markers[i].getHorizontalWidth(), markers[i].getVerticalWidth());
             }
-            qDebug("reference: %.2f %.2f",markers[18].getCenterX(), markers[19].getCenterX());
+            //qDebug("reference: %.2f %.2f",markers[18].getCenterX(), markers[19].getCenterX());
         }
 #endif
 
