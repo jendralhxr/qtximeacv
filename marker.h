@@ -1,6 +1,6 @@
 #ifndef MARKER_H
 #define MARKER_H
-#define NUM_MODES 8
+#define NUM_MODES 11 // liek libeemd
 #define SAMPLE_WINDOW 512
 #define LATERAL_D 0
 #define VERTICAL_D 1

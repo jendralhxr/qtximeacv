@@ -23,7 +23,7 @@ class captureThread : public QThread
     Q_OBJECT
 
 public:
-   //explicit captureThread(QObject *parent = 0);
+   explicit captureThread(QObject *parent = 0);
    captureThread();
    captureThread(int dev);
 
