@@ -1,5 +1,7 @@
 #include "marker.h"
 #include <math.h>
+#include <stdlib.h>
+
 #define PI 3.1415926
 
 marker::marker(QObject *parent) : QObject(parent){
@@ -74,4 +76,24 @@ double marker::getCenterX(){
 double marker::getCenterY(){
     return ((y_start+y_end)/2);
     // or any relevant centroid calculation
+}
+
+void marker::setBaseLine(int x, int y){
+    baseline[LATERAL_D]= x;
+    baseline[VERTICAL_D]= y;
+}
+
+void marker::setBaseLine(){
+    baseline[LATERAL_D]= displacement[LATERAL_D][SAMPLE_WINDOW-1];
+    baseline[VERTICAL_D]= displacement[VERTICAL_D][SAMPLE_WINDOW-1];
+}
+
+void marker::updatePosition(int x, int y){
+    memmove(&(displacement[LATERAL_D][0]), &(displacement[LATERAL_D][1]), sizeof(double)*(SAMPLE_WINDOW-1));
+    memmove(&(displacement[VERTICAL_D][0]), &(displacement[VERTICAL_D][1]), sizeof(double)*(SAMPLE_WINDOW-1));
+    displacement[LATERAL_D][SAMPLE_WINDOW-1]= x;
+    displacement[VERTICAL_D][SAMPLE_WINDOW-1]= y;
+
+// calculate fft, emd
+
 }
