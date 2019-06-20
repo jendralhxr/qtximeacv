@@ -4,11 +4,11 @@
 #define SAMPLE_WINDOW 512
 #define LATERAL_D 0
 #define VERTICAL_D 1
+// import pffft and libeemd here
+#include "libeemd/eemd.h"
+#include "meow_fft/meow_fft.h"
 
 #include <QObject>
-
-
-// import pffft and libeemd here
 
 class marker : public QObject
 {

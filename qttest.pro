@@ -13,12 +13,11 @@ TARGET = qttest
 TEMPLATE = app
 
 unix{
-#include(/usr/local/qwt/features/qwt.prf)
-#opencv
-INCLUDEPATH += /usr/include/opencv2
-LIBS += `pkg-config opencv --libs`
+CONFIG += link_pkgconfig
+#include system's opencv ang gsl
+PKGCONFIG += opencv gsl
 #ximea
-INCLUDEPATH += /usr/include/m3api
+INCLUDEPATH += /usr/include/m3api/
 LIBS += /usr/lib/libm3api.so
 }
 
@@ -49,9 +48,17 @@ else:CONFIG(debug, debug|release): LIBS += -LC:/Qwt/lib/ -lqwtd
 SOURCES += main.cpp\
     capturethread.cpp \
     renderimage.cpp \
-    marker.cpp
+    marker.cpp\
+    libeemd/eemd.c
+
 
 HEADERS += \
     capturethread.h \
     renderimage.h \
-    marker.h
+    marker.h \
+    libeemd/eemd.h \
+    meow_fft/meow_fft.h
+
+DISTFILES += \
+    libeemd/README.md \
+    meow_fft/README.md
