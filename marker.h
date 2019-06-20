@@ -4,9 +4,9 @@
 #define SAMPLE_WINDOW 512
 #define LATERAL_D 0
 #define VERTICAL_D 1
+
 // import pffft and libeemd here
 #include "libeemd/eemd.h"
-#include "meow_fft/meow_fft.h"
 
 #include <QObject>
 
@@ -33,18 +33,23 @@ public slots:
     void setBaseLine(int x, int y);
     void setBaseLine();
     void updatePosition(int x, int y);
+    void calculateFFT();
 
 private:
     unsigned char bin[256], bin_maximum, threshold;
     int x_start, x_end, y_start, y_end;
     double area;
-    double frequency_response[2][SAMPLE_WINDOW];
     double displacement[2][SAMPLE_WINDOW];
     double zeta[2][NUM_MODES];
     double imfs[2][NUM_MODES][SAMPLE_WINDOW];
     double speed[2][SAMPLE_WINDOW], acceleration[2][SAMPLE_WINDOW]; // unused atm
     double displacement_peak[2];
     double baseline[2];
+    // fft
+    Meow_FFT_Complex frequency_response[2][SAMPLE_WINDOW];
+    Meow_FFT_Workset_Real *fft_real;
+    size_t workset_bytes;
+
 
 };
 

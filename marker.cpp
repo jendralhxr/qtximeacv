@@ -5,7 +5,12 @@
 #define PI 3.1415926
 
 marker::marker(QObject *parent) : QObject(parent){
-
+    //meow_fft stuff
+    /*
+     * workset_bytes = meow_fft_generate_workset_real(SAMPLE_WINDOW, NULL);
+    //fft_real = (Meow_FFT_Workset_Real*) malloc(workset_bytes);
+    meow_fft_generate_workset_real(SAMPLE_WINDOW, fft_real);
+*/
 }
 
 void marker::setROI(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1){
@@ -93,7 +98,14 @@ void marker::updatePosition(int x, int y){
     memmove(&(displacement[VERTICAL_D][0]), &(displacement[VERTICAL_D][1]), sizeof(double)*(SAMPLE_WINDOW-1));
     displacement[LATERAL_D][SAMPLE_WINDOW-1]= x;
     displacement[VERTICAL_D][SAMPLE_WINDOW-1]= y;
+}
 
 // calculate fft, emd
-
+void marker::calculateFFT(){
+    //meow_fft_real(fft_real, displacement[0], frequency_response[0]); // lateral
+    //meow_fft_real(fft_real, displacement[1], frequency_response[1]); // vertical
+    frequency_response[0][0].r == 0;
+    frequency_response[0][0].j == 0;
+    frequency_response[1][0].r == 0;
+    frequency_response[1][0].j == 0;
 }

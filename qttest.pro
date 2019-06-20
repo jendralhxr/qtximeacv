@@ -14,7 +14,7 @@ TEMPLATE = app
 
 unix{
 CONFIG += link_pkgconfig
-#include system's opencv ang gsl
+#include system's opencv, gsl, blas
 PKGCONFIG += opencv gsl
 #ximea
 INCLUDEPATH += /usr/include/m3api/
@@ -56,9 +56,7 @@ HEADERS += \
     capturethread.h \
     renderimage.h \
     marker.h \
-    libeemd/eemd.h \
-    meow_fft/meow_fft.h
+    libeemd/eemd.h
 
 DISTFILES += \
-    libeemd/README.md \
-    meow_fft/README.md
+    libeemd/README.md
