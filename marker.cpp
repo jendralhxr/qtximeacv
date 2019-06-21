@@ -3,6 +3,8 @@
 #include <stdlib.h>
 
 #define PI 3.1415926
+#define REAL(z,i) ((z)[2*(i)])
+#define IMAG(z,i) ((z)[2*(i)+1])
 
 marker::marker(QObject *parent) : QObject(parent){
     //meow_fft stuff
@@ -102,10 +104,13 @@ void marker::updatePosition(int x, int y){
 
 // calculate fft, emd
 void marker::calculateFFT(){
-    //meow_fft_real(fft_real, displacement[0], frequency_response[0]); // lateral
-    //meow_fft_real(fft_real, displacement[1], frequency_response[1]); // vertical
-    frequency_response[0][0].r == 0;
-    frequency_response[0][0].j == 0;
-    frequency_response[1][0].r == 0;
-    frequency_response[1][0].j == 0;
+    for (int i=0; i<SAMPLE_WINDOW; i++){
+        displacement_fft[LATERAL_D][2*i]= displacement[LATERAL_D][i];
+        displacement_fft[LATERAL_D][(SAMPLE_WINDOW<<1)-2*i]= displacement[LATERAL_D][i];
+        displacement_fft[LATERAL_D][2*i+1]= 0; // might be unnecessary
+        displacement_fft[LATERAL_D][(SAMPLE_WINDOW<<1)-2*i+1]= displacement[LATERAL_D][i];
+
+
+
+    }
 }

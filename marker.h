@@ -39,18 +39,16 @@ private:
     unsigned char bin[256], bin_maximum, threshold;
     int x_start, x_end, y_start, y_end;
     double area;
-    double displacement[2][SAMPLE_WINDOW];
+    // 0 is lateral, 1 is vertical
+    double displacement[2][SAMPLE_WINDOW]; // cause FFT
     double zeta[2][NUM_MODES];
     double imfs[2][NUM_MODES][SAMPLE_WINDOW];
-    double speed[2][SAMPLE_WINDOW], acceleration[2][SAMPLE_WINDOW]; // unused atm
+    // double speed[2][SAMPLE_WINDOW], acceleration[2][SAMPLE_WINDOW]; // unused atm
     double displacement_peak[2];
     double baseline[2];
-    // fft
-    Meow_FFT_Complex frequency_response[2][SAMPLE_WINDOW];
-    Meow_FFT_Workset_Real *fft_real;
-    size_t workset_bytes;
-
-
+    // fft w/ gsl
+    double displacement_fft[2][2*SAMPLE_WINDOW];
+    double displacement_abs[2][SAMPLE_WINDOW];
 };
 
 #endif // MARKER_H
