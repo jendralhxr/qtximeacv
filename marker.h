@@ -28,6 +28,8 @@ public:
     void reset();
 
 signals:
+    void getFRF_lateral(double *frf);
+    void getFRF_vertical(double *frf);
 
 public slots:
     void setBaseLine(int x, int y);
@@ -48,7 +50,7 @@ private:
     double baseline[2];
     // fft w/ gsl
     double displacement_fft[2][2*SAMPLE_WINDOW];
-    double displacement_abs[2][SAMPLE_WINDOW];
+    double frf[2][SAMPLE_WINDOW/2];
 };
 
 #endif // MARKER_H
