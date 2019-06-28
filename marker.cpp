@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
+#include "libeemd/eemd.h"
 
 #define PI 3.1415926
 
@@ -99,15 +100,24 @@ void marker::updatePosition(int x, int y){
 // calculate fft, emd
 void marker::calculateFFT(){
     for (int i=0; i<SAMPLE_WINDOW; i++){
-        displacement_fft[LATERAL_D][i<<1]= displacement[LATERAL_D][i];
-        displacement_fft[LATERAL_D][i<<1+1]= 0.0;
-        displacement_fft[VERTICAL_D][i<<1i]= displacement[VERTICAL_D][i];
-        displacement_fft[VERTICAL_D][i<<1i+1]= 0.0;
+        displacement_fft[LATERAL_D][(i<<1)]= displacement[LATERAL_D][i];
+        displacement_fft[LATERAL_D][(i<<1)+1]= 0.0;
+        displacement_fft[VERTICAL_D][(i<<1)]= displacement[VERTICAL_D][i];
+        displacement_fft[VERTICAL_D][(i<<1)+1]= 0.0;
     }
     gsl_fft_complex_radix2_forward(displacement_fft[LATERAL_D], 1, SAMPLE_WINDOW);
     gsl_fft_complex_radix2_forward(displacement_fft[VERTICAL_D], 1, SAMPLE_WINDOW);
     for (int i=0; i<SAMPLE_WINDOW/2; i++){
-        frf[LATERAL_D][i]= sqrt(pow(displacement_fft[LATERAL_D][i<<1],2) +pow(displacement_fft[LATERAL_D][i<<1+1],2));
-        frf[VERTICAL_D][i]= sqrt(pow(displacement_fft[LATERAL_D][i<<1],2) +pow(displacement_fft[LATERAL_D][i<<1+1],2));
+        frf[LATERAL_D][i]= sqrt(pow(displacement_fft[LATERAL_D][(i<<1)],2) +pow(displacement_fft[LATERAL_D][(i<<1)+1],2));
+        frf[VERTICAL_D][i]= sqrt(pow(displacement_fft[LATERAL_D][(i<<1)],2) +pow(displacement_fft[LATERAL_D][(i<<1)+1],2));
     }
+}
+
+void marker::calculateEMD(){
+
+}
+
+void marker::calculateDamping(){
+
+
 }

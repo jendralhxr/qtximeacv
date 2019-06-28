@@ -36,6 +36,8 @@ public slots:
     void setBaseLine();
     void updatePosition(int x, int y);
     void calculateFFT();
+    void calculateEMD();
+    void calculateDamping();
 
 private:
     unsigned char bin[256], bin_maximum, threshold;
