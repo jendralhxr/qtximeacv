@@ -1,6 +1,6 @@
 #ifndef MARKER_H
 #define MARKER_H
-#define NUM_MODES 11 // liek libeemd
+#define NUM_MODES 10 // liek libeemd, log2(SAMPLE_WINDOW)
 #define SAMPLE_WINDOW 512
 #define LATERAL_D 0
 #define VERTICAL_D 1
@@ -53,6 +53,10 @@ private:
     // fft w/ gsl
     double displacement_fft[2][2*SAMPLE_WINDOW];
     double frf[2][SAMPLE_WINDOW/2];
+    libeemd_error_code err;
+
+    // need whole run displacement log
+
 };
 
 #endif // MARKER_H

@@ -7,6 +7,13 @@
 
 #define PI 3.1415926
 
+// for EMD
+#define ensemble_size 250
+#define S_number 4
+#define num_siftings 50
+#define noise_strength 0.2
+#define rng_seed 0
+
 marker::marker(QObject *parent) : QObject(parent){
 }
 
@@ -95,9 +102,11 @@ void marker::updatePosition(int x, int y){
     memmove(&(displacement[VERTICAL_D][0]), &(displacement[VERTICAL_D][1]), sizeof(double)*(SAMPLE_WINDOW-1));
     displacement[LATERAL_D][SAMPLE_WINDOW-1]= x;
     displacement[VERTICAL_D][SAMPLE_WINDOW-1]= y;
+    if ( fabs(x)> displacement_peak[LATERAL_D]) displacement_peak[LATERAL_D]= x;
+    if ( fabs(y)> displacement_peak[VERTICAL_D]) displacement_peak[VERTICAL_D]= y;
 }
 
-// calculate fft, emd
+// calculate the numery stuff
 void marker::calculateFFT(){
     for (int i=0; i<SAMPLE_WINDOW; i++){
         displacement_fft[LATERAL_D][(i<<1)]= displacement[LATERAL_D][i];
@@ -114,6 +123,8 @@ void marker::calculateFFT(){
 }
 
 void marker::calculateEMD(){
+    err = eemd(displacement[LATERAL_D], SAMPLE_WINDOW, (double*) imfs[LATERAL_D], NUM_MODES, ensemble_size, noise_strength, S_number, num_siftings, rng_seed);
+    err = eemd(displacement[VERTICAL_D], SAMPLE_WINDOW, (double*) imfs[VERTICAL_D], NUM_MODES, ensemble_size, noise_strength, S_number, num_siftings, rng_seed);
 
 }
 
