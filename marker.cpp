@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
-#include "libeemd/eemd.h"
+#include <eemd.h>
 
 #define PI 3.1415926
 

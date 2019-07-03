@@ -19,7 +19,10 @@ PKGCONFIG += opencv gsl
 #ximea
 INCLUDEPATH += /usr/include/m3api/
 LIBS += /usr/lib/libm3api.so
+#libeemd
+LIBS += /usr/lib/libeemd.so
 }
+
 
 win32{
 #opencv
@@ -48,15 +51,12 @@ else:CONFIG(debug, debug|release): LIBS += -LC:/Qwt/lib/ -lqwtd
 SOURCES += main.cpp\
     capturethread.cpp \
     renderimage.cpp \
-    marker.cpp\
-    libeemd/eemd.c
+    marker.cpp
 
 
 HEADERS += \
     capturethread.h \
     renderimage.h \
-    marker.h \
-    libeemd/eemd.h
+    marker.h
 
-DISTFILES += \
-    libeemd/README.md
+DISTFILES +=

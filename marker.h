@@ -6,7 +6,7 @@
 #define VERTICAL_D 1
 
 // import pffft and libeemd here
-#include "libeemd/eemd.h"
+#include <eemd.h>
 
 #include <QObject>
 
