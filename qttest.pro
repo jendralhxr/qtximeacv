@@ -15,12 +15,10 @@ TEMPLATE = app
 unix{
 CONFIG += link_pkgconfig
 #include system's opencv, gsl, blas
-PKGCONFIG += opencv gsl
+PKGCONFIG += opencv gsl blas
 #ximea
 INCLUDEPATH += /usr/include/m3api/
-LIBS += /usr/lib/libm3api.so
-#libeemd
-LIBS += /usr/lib/libeemd.so
+LIBS += /usr/lib/libm3api.so -leemd
 }
 
 
@@ -60,3 +58,5 @@ HEADERS += \
     marker.h
 
 DISTFILES +=
+
+unix:!macx:
