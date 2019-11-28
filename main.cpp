@@ -37,10 +37,13 @@ int main(int argc, char *argv[])
     framesBox->setMinimum(2);
     QPushButton *saveButton= new QPushButton("save frames");
 
-    QLabel *thresholdLabel = new QLabel("Threshold");
-    QSpinBox *thresholdBox = new QSpinBox();
-    thresholdBox->setMaximum(255);
-    thresholdBox->setMinimum(5);
+    QLabel *thresholdLabel = new QLabel("Gain");
+    //QSpinBox *thresholdBox = new QSpinBox();
+    QDoubleSpinBox *thresholdBox = new QDoubleSpinBox(); // just too lazy to create new object name
+    thresholdBox->setMaximum(6.0);
+    thresholdBox->setMinimum(-3.0);
+    thresholdBox->setSingleStep(0.1);
+    thresholdBox->setReadOnly(false);
 
     //QObject::connect(cameraHead1, SIGNAL(getImage(void*)), camimage, SLOT(receiveBitmap(void*)));
     QObject::connect(cameraHead1, SIGNAL(getImage(QImage)), camimage, SLOT(receiveBitmap(QImage)));
@@ -50,7 +53,9 @@ int main(int argc, char *argv[])
     QObject::connect(saveButton, SIGNAL(pressed()), cameraHead1, SLOT(saveFrames()));
     QObject::connect(cameraHead1, SIGNAL(getFPS(int)), rateBox, SLOT(setValue(int)));
     QObject::connect(framesBox, SIGNAL(valueChanged(int)), cameraHead1, SLOT(setFramesToSave(int)));
-    QObject::connect(thresholdBox, SIGNAL(valueChanged(int)), cameraHead1, SLOT(setThreshold(int)));
+    //QObject::connect(thresholdBox, SIGNAL(valueChanged(int)), cameraHead1, SLOT(setThreshold(int)));
+    QObject::connect(thresholdBox, SIGNAL(), cameraHead1, SLOT(setThreshold(int)));
+    QObject::connect(thresholdBox, SIGNAL(valueChanged(double)), cameraHead1, SLOT(setGain(double)));
 
     QGridLayout *simplelayout= new QGridLayout();
     simplelayout->addWidget(camimage, 0, 0, 1, 9, Qt::AlignHCenter);

@@ -33,7 +33,7 @@ captureThread::captureThread() // no argument
     xiSetParamInt(handle,XI_PRM_ACQ_TIMING_MODE, XI_ACQ_TIMING_MODE_FRAME_RATE_LIMIT);
     xiSetParamFloat(handle, XI_PRM_FRAMERATE, 10);
 
-    xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
+    xiSetParamFloat(handle, XI_PRM_GAIN, -3.5); // -3.5 to 7.4
     //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
     xiSetParamInt(handle, XI_PRM_OFFSET_X, 0);
@@ -73,10 +73,12 @@ captureThread::captureThread() // no argument
 
 captureThread::captureThread(int dev){
     devicenum= dev;
-    qDebug("device num %d",devicenum);
+    unsigned int devices;
+    xiGetNumberDevices(&devices);
+    qDebug("device num %d out of %d",devicenum, devices);
     if(xiOpenDevice(devicenum, &handle) != XI_OK) exit(1); // device num
     framenum_max= FRAMENUM_MAX;
-    xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3.5 to 7.4
+    xiSetParamFloat(handle, XI_PRM_GAIN, 7.4); // -3 to 6
     //xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RGB24); // simply cause I can
     xiSetParamInt(handle, XI_PRM_IMAGE_DATA_FORMAT, XI_RAW8); // faster
     xiSetParamInt(handle, XI_PRM_OFFSET_X, 0);
@@ -361,4 +363,10 @@ int captureThread::calculateCentroids(){
 void captureThread::setThreshold(int val){
     qDebug("threshold set to %d", val);
     for (int i=0; i<MARKERS_COUNT; i++) markers[i].setThreshold(val);
+}
+
+
+void captureThread::setGain(double val){
+    xiSetParamFloat(handle, XI_PRM_GAIN, val); // -3.5 to 7.4
+    qDebug("setting gain %f",val);
 }

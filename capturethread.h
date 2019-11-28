@@ -39,6 +39,7 @@ public slots:
     void setExposure(int val);
     void setFramesToSave(int val);
     void setThreshold(int val);
+    void setGain(double val);
     int calculateCentroids();
 
 private:
