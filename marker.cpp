@@ -14,7 +14,7 @@
 #define noise_strength 0.2
 #define rng_seed 0
 
-marker::marker(QObject *parent) : QObject(parent){
+marker::marker(QThread *parent) : QThread(parent){
 }
 
 void marker::setROI(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1){

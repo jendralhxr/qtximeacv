@@ -12,7 +12,7 @@
 #define EXPOSURE_DEFAULT 2000
 #define EXPOSURE_MIN 28
 #define EXPOSURE_MAX 2000000
-#define FRAMENUM_MAX 4000
+#define FRAMENUM_MAX 12000
 #define SAVE_FRAMES 2400
 int main(int argc, char *argv[])
 {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     QLabel *thresholdLabel = new QLabel("Gain");
     //QSpinBox *thresholdBox = new QSpinBox();
     QDoubleSpinBox *thresholdBox = new QDoubleSpinBox(); // just too lazy to create new object name
-    thresholdBox->setMaximum(6.0);
+    thresholdBox->setMaximum(9.0);
     thresholdBox->setMinimum(-3.0);
     thresholdBox->setSingleStep(0.1);
     thresholdBox->setReadOnly(false);

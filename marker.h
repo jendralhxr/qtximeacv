@@ -8,13 +8,13 @@
 // import pffft and libeemd here
 #include <eemd.h>
 
-#include <QObject>
+#include <QThread>
 
-class marker : public QObject
+class marker : public QThread
 {
     Q_OBJECT
 public:
-    explicit marker(QObject *parent = 0);
+    explicit marker(QThread *parent = 0);
     void setROI(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1);
     int getMaximumIntensity();
     double getAverageIntensity();

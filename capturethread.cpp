@@ -7,7 +7,7 @@
 #define IMAGE_HEIGHT 752 //752, 762, 504
 #define EXPOSURE 2000 // us
 #define FPS_REQUESTED 240
-#define FRAMENUM_MAX 3200
+#define FRAMENUM_MAX 12000
 // pick one of these two
 //#define HEAD_COLOR
 #define HEAD_MONOCHROME
