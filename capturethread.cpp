@@ -65,10 +65,6 @@ captureThread::captureThread() // no argument
     emit getImageSize(image.width, image.height);
     qDebug("size %d %d",image.width, image.height);
     //captured_frames = new QImage[FRAMENUM_MAX];
-
-    logfile =  new QFile();
-    logfile->setFileName("/me/timing.txt");
-    streamout = new QTextStream(logfile);
 }
 
 captureThread::captureThread(int dev){
@@ -114,9 +110,6 @@ captureThread::captureThread(int dev){
     qDebug("size %d %d",image.width, image.height);
     //captured_frames = new QImage[FRAMENUM_MAX];
 
-    logfile =  new QFile();
-    logfile->setFileName("/me/timing.txt");
-    streamout = new QTextStream(logfile);
 }
 
 void captureThread::run(){
@@ -125,11 +118,12 @@ here:
     time_start= QDateTime::currentDateTime().toMSecsSinceEpoch();
     for (framenum=0; framenum<framenum_max; framenum++){
         xiGetImage(handle, 1000, &image); // Capture Image //timeout in microseconds
+
         //temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888); //rgb24
         //temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, QImage::Format_Grayscale8);
+        // passing pointer to image.bp isn't good idea as capture buffer may be changed
         memcpy(frame->data, image.bp, IMAGE_WIDTH*IMAGE_HEIGHT);
 
-        // passing pointer to image.bp isn't good idea as capture buffer may be changed
         if (save_frames) { // whether save or display
             captured_frames[framenum]= frame->clone();
             //gettimeofday(&timestamp[framenum],NULL);
@@ -147,89 +141,9 @@ here:
             //emit getSeparator(0, 0, 360, 360);
         }
         // update markers
-        else if(frames_in_sec==1){
-            for (int i=0; i<MARKERS_COUNT; i++) markers[i].reset();
-            offset= IMAGE_HEIGHT * IMAGE_WIDTH -1;
-            woho:
-            temp_x= offset % IMAGE_WIDTH;
-            temp_y= offset / IMAGE_WIDTH;
-            // right side markers
-            // marker0
-            if (temp_y<170){
-                if (temp_x<470) markers[18].addPixel(temp_x, temp_y, frame->data[offset]);
-            }
-            if (temp_y>600){
-                if (temp_x<450) markers[19].addPixel(temp_x, temp_y, frame->data[offset]);
-            }
-            else if (temp_y<410){
-                     if (temp_x>1630) markers[0].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1363) markers[1].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1091) markers[2].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>890) markers[3].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>700) markers[4].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>560) markers[5].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>395) markers[6].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>233) markers[7].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>40) markers[8].addPixel(temp_x, temp_y, frame->data[offset]);
-            }
-            // left side markers
-            else{
-                     if (temp_x>1630) markers[9].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1363) markers[10].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>1091) markers[11].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>890) markers[12].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>700) markers[13].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>565) markers[14].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>395) markers[15].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>233) markers[16].addPixel(temp_x, temp_y, frame->data[offset]);
-                else if (temp_x>40) markers[17].addPixel(temp_x, temp_y, frame->data[offset]);
-                }
-            offset--;
-            if (offset) goto woho;
-
-            // verbose output
-            for (int i=0; i<MARKERS_COUNT; i++){
-                //qDebug("marker%d: max %d; avg %.2f; width %.2f %d %d", i, markers[i].getMaximumIntensity(), \
-                       markers[i].getAverageIntensity(), markers[i].getCircleWidth(),\
-                       markers[i].getHorizontalWidth(), markers[i].getVerticalWidth());
-            }
-            //qDebug("reference: %.2f %.2f",markers[18].getCenterX(), markers[19].getCenterX());
-        }
+      }
 #endif
 
-#ifdef HEAD_COLOR
-        // render color
-        else if (!(frames_in_sec%RENDER_INTERVAL)){
-            cvtColor(*frame, *frame_buffer, CV_BayerGB2GRAY);
-            //cvtColor(*frame, *frame_buffer, CV_BayerBG2GRAY);
-            cvtColor(*frame_buffer, *frame_color, CV_GRAY2RGB);
-            // color correction
-            /*
-            offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
-restofimage:
-            switch(offset%3){
-            case 0: // blue
-                frame_color->data[offset] = char(frame_color->data[offset] * 2.4);
-                break;
-            case 1: // green
-                frame_color->data[offset] = char(frame_color->data[offset] * 1.33);
-                break;
-            case 2: // red
-                frame_color->data[offset] = char(frame_color->data[offset] * 1.43);
-                break;
-            default:
-                break;
-            }
-            offset--;
-            if (offset>-1) goto restofimage;
-            */
-            //assert(frame_color->isContinuous()); // make sure the memory is contiguous
-            temp = QImage(frame_color->data, IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
-            emit getImage(temp);
-            emit getSeparator(0, 0, 360, 360);
-
-        }
-#endif
 
         if (!save_frames) {
             // timing, 1 s interval
@@ -251,40 +165,13 @@ restofimage:
             framenum= 0;
         }
         //else qDebug("buffering %d/%d",framenum, framenum_max);
-    }
+
 
     if (save_frames){
         for (int framenum=0; framenum<framenum_max; framenum++){
             qDebug("saving %d",framenum);
-            sprintf(filename,"/me/xi%d%04d.tif",devicenum,framenum);
+            sprintf(filename,"/me/ssd/xi%1d%05d.tif",devicenum,framenum);
 
-#ifdef HEAD_COLOR
-            // saving frames
-            cvtColor(captured_frames[framenum], *frame_buffer, CV_BayerGB2GRAY);
-            /*
-        // color correction
-        offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
-saveimage:
-        switch(offset%3){
-        case 0: // blue
-            frame_color->data[offset] = char(frame_color->data[offset] * 2.4);
-            break;
-        case 1: // green
-            frame_color->data[offset] = char(frame_color->data[offset] * 1.33);
-            break;
-        case 2: // red
-            frame_color->data[offset] = char(frame_color->data[offset] * 1.43);
-            break;
-        default:
-            break;
-        }
-        offset--;
-        if (offset>-1) goto saveimage;
-*/
-
-            //imwrite is faster compared to QImage.save
-            imwrite(filename, *frame_buffer);
-#endif
 
 #ifdef HEAD_MONOCHROME
             imwrite(filename, captured_frames[framenum]); // grayscale camera head
@@ -296,7 +183,6 @@ saveimage:
         save_frames= FALSE;
         goto here;
     }
-    logfile->close();
     //exit(0);
     if (!this->isRunning()) this->start(QThread::NormalPriority);
 }
@@ -369,4 +255,8 @@ void captureThread::setThreshold(int val){
 void captureThread::setGain(double val){
     xiSetParamFloat(handle, XI_PRM_GAIN, val); // -3.5 to 7.4
     qDebug("setting gain %f",val);
+}
+
+Mat* captureThread::getActiveMat(){
+    return(frame);
 }

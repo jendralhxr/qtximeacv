@@ -41,6 +41,7 @@ public slots:
     void setThreshold(int val);
     void setGain(double val);
     int calculateCentroids();
+    Mat*  getActiveMat();
 
 private:
 
