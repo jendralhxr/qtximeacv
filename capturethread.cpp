@@ -65,6 +65,10 @@ captureThread::captureThread() // no argument
     emit getImageSize(image.width, image.height);
     qDebug("size %d %d",image.width, image.height);
     //captured_frames = new QImage[FRAMENUM_MAX];
+
+    logfile =  new QFile();
+    logfile->setFileName("/me/timing.txt");
+    streamout = new QTextStream(logfile);
 }
 
 captureThread::captureThread(int dev){
@@ -110,6 +114,9 @@ captureThread::captureThread(int dev){
     qDebug("size %d %d",image.width, image.height);
     //captured_frames = new QImage[FRAMENUM_MAX];
 
+    logfile =  new QFile();
+    logfile->setFileName("/me/timing.txt");
+    streamout = new QTextStream(logfile);
 }
 
 void captureThread::run(){
@@ -118,12 +125,11 @@ here:
     time_start= QDateTime::currentDateTime().toMSecsSinceEpoch();
     for (framenum=0; framenum<framenum_max; framenum++){
         xiGetImage(handle, 1000, &image); // Capture Image //timeout in microseconds
-
         //temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888); //rgb24
         //temp= QImage(static_cast<unsigned char*>(image.bp), IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_WIDTH, QImage::Format_Grayscale8);
-        // passing pointer to image.bp isn't good idea as capture buffer may be changed
         memcpy(frame->data, image.bp, IMAGE_WIDTH*IMAGE_HEIGHT);
 
+        // passing pointer to image.bp isn't good idea as capture buffer may be changed
         if (save_frames) { // whether save or display
             captured_frames[framenum]= frame->clone();
             //gettimeofday(&timestamp[framenum],NULL);
@@ -140,10 +146,41 @@ here:
             emit getImage(temp);
             //emit getSeparator(0, 0, 360, 360);
         }
-        // update markers
-      }
 #endif
 
+#ifdef HEAD_COLOR
+        // render color
+        else if (!(frames_in_sec%RENDER_INTERVAL)){
+            cvtColor(*frame, *frame_buffer, CV_BayerGB2GRAY);
+            //cvtColor(*frame, *frame_buffer, CV_BayerBG2GRAY);
+            cvtColor(*frame_buffer, *frame_color, CV_GRAY2RGB);
+            // color correction
+            /*
+            offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
+restofimage:
+            switch(offset%3){
+            case 0: // blue
+                frame_color->data[offset] = char(frame_color->data[offset] * 2.4);
+                break;
+            case 1: // green
+                frame_color->data[offset] = char(frame_color->data[offset] * 1.33);
+                break;
+            case 2: // red
+                frame_color->data[offset] = char(frame_color->data[offset] * 1.43);
+                break;
+            default:
+                break;
+            }
+            offset--;
+            if (offset>-1) goto restofimage;
+            */
+            //assert(frame_color->isContinuous()); // make sure the memory is contiguous
+            temp = QImage(frame_color->data, IMAGE_WIDTH, IMAGE_HEIGHT, 3*IMAGE_WIDTH, QImage::Format_RGB888);
+            emit getImage(temp);
+            emit getSeparator(0, 0, 360, 360);
+
+        }
+#endif
 
         if (!save_frames) {
             // timing, 1 s interval
@@ -165,13 +202,40 @@ here:
             framenum= 0;
         }
         //else qDebug("buffering %d/%d",framenum, framenum_max);
-
+    }
 
     if (save_frames){
         for (int framenum=0; framenum<framenum_max; framenum++){
             qDebug("saving %d",framenum);
-            sprintf(filename,"/me/ssd/xi%1d%05d.tif",devicenum,framenum);
+            sprintf(filename,"/me/ssd/xi%d%04d.tif",devicenum,framenum);
 
+#ifdef HEAD_COLOR
+            // saving frames
+            cvtColor(captured_frames[framenum], *frame_buffer, CV_BayerGB2GRAY);
+            /*
+        // color correction
+        offset = 3*IMAGE_WIDTH*IMAGE_HEIGHT -1;
+saveimage:
+        switch(offset%3){
+        case 0: // blue
+            frame_color->data[offset] = char(frame_color->data[offset] * 2.4);
+            break;
+        case 1: // green
+            frame_color->data[offset] = char(frame_color->data[offset] * 1.33);
+            break;
+        case 2: // red
+            frame_color->data[offset] = char(frame_color->data[offset] * 1.43);
+            break;
+        default:
+            break;
+        }
+        offset--;
+        if (offset>-1) goto saveimage;
+*/
+
+            //imwrite is faster compared to QImage.save
+            imwrite(filename, *frame_buffer);
+#endif
 
 #ifdef HEAD_MONOCHROME
             imwrite(filename, captured_frames[framenum]); // grayscale camera head
@@ -183,6 +247,7 @@ here:
         save_frames= FALSE;
         goto here;
     }
+    logfile->close();
     //exit(0);
     if (!this->isRunning()) this->start(QThread::NormalPriority);
 }
@@ -256,6 +321,7 @@ void captureThread::setGain(double val){
     xiSetParamFloat(handle, XI_PRM_GAIN, val); // -3.5 to 7.4
     qDebug("setting gain %f",val);
 }
+
 
 Mat* captureThread::getActiveMat(){
     return(frame);
