@@ -12,8 +12,9 @@
 #define EXPOSURE_DEFAULT 2000
 #define EXPOSURE_MIN 28
 #define EXPOSURE_MAX 2000000
-#define FRAMENUM_MAX 12000
+#define FRAMENUM_MAX 14400
 #define SAVE_FRAMES 2400
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

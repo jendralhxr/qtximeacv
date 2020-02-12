@@ -7,7 +7,7 @@
 #define IMAGE_HEIGHT 752 //752, 762, 504
 #define EXPOSURE 2000 // us
 #define FPS_REQUESTED 240
-#define FRAMENUM_MAX 12000
+#define FRAMENUM_MAX 14400
 // pick one of these two
 //#define HEAD_COLOR
 #define HEAD_MONOCHROME
@@ -182,7 +182,7 @@ restofimage:
         }
 #endif
 
-        if (!save_frames) {
+        if (!save_frames){
             // timing, 1 s interval
             xiGetParamFloat(handle, XI_PRM_FRAMERATE, &fps); //that fps thing
          //   xiGetParamInt(handle, XI_PRM_SENSOR_CLOCK_FREQ_HZ, &clock_freq);
@@ -196,10 +196,12 @@ restofimage:
                 time_start= time_stop;
                 frames_in_sec= 0;
                 //qDebug("fps-board %f",fps);
-                //if (!save_frames) calculateCentroids();
             }
             else frames_in_sec++;
             framenum= 0;
+
+        // spreading the love
+        getCurrentMat(frame);
         }
         //else qDebug("buffering %d/%d",framenum, framenum_max);
     }
@@ -207,7 +209,7 @@ restofimage:
     if (save_frames){
         for (int framenum=0; framenum<framenum_max; framenum++){
             qDebug("saving %d",framenum);
-            sprintf(filename,"/me/ssd/xi%d%04d.tif",devicenum,framenum);
+            sprintf(filename,"/me/ssd/xi%1d%05d.tif",devicenum,framenum);
 
 #ifdef HEAD_COLOR
             // saving frames
@@ -271,44 +273,6 @@ void captureThread::setExposure(int val){
     xiSetParamInt(handle, XI_PRM_EXPOSURE, val); // us
     qDebug("set exposure to %d",val);
     this->start(QThread::HighestPriority);
-}
-
-int captureThread::calculateCentroids(){
-    bitwise_not(*frame_buffer, invert);
-    detector.detect(invert, keypoints);
-    //detector.detect(image, keypoints);
-
-    int n=0;
-    for (std::vector<KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end(); ++it){
-        //cout << it->pt.x  << ';' << it->pt.y << endl;
-        moment_x[n]= it->pt.x;
-        moment_y[n]= it->pt.y;
-        mass[n]= it->size;
-        n++;
-    } //  std::cout << ' ' << *it;
-
-    // little sorting
-    for (int i=n-1; i>=0; i--){
-        for (int j=i-1; j>=0; j--){
-            if (moment_x[i] > moment_x[j]){
-                moment_x_temp= moment_x[i];
-                moment_y_temp= moment_y[i];
-                mass_temp= mass[i];
-                moment_x[i]= moment_x[j];
-                moment_y[i]= moment_y[j];
-                mass[i]= mass[j];
-                moment_x[j]= moment_x_temp;
-                moment_y[j]= moment_y_temp;
-                mass[j]= mass_temp;
-            }
-        }
-    }
-
-    for (int i=n-1; i>=0; i--){
-        qDebug("%f %f\n",moment_x[i], moment_y[i]);
-    }
-    return(n);
-
 }
 
 void captureThread::setThreshold(int val){

@@ -33,6 +33,7 @@ signals:
     void getImage(QImage image);
     void getImageSize(unsigned width, unsigned height);
     void getSeparator(int x0, int y0, int x1, int y1);
+    void getCurrentMat(Mat* current);
 
 public slots:
     void saveFrames();
@@ -40,7 +41,6 @@ public slots:
     void setFramesToSave(int val);
     void setThreshold(int val);
     void setGain(double val);
-    int calculateCentroids();
     Mat*  getActiveMat();
 
 private:

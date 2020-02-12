@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <QLine>
 #include <QLineF>
+#include <QMouseEvent>
 
 #define IMAGE_WIDTH 1024
 #define IMAGE_HEIGHT 700
+#define MARKER_COUNT 11
 //#define COLOR
 
 renderImage::renderImage(QWidget *parent) : QLabel(parent){
@@ -12,6 +14,7 @@ renderImage::renderImage(QWidget *parent) : QLabel(parent){
     //canvas->fill(IMAGE_WIDTH*IMAGE_HEIGHT);
     //setPixmap(QPixmap::fromImage(*canvas));
     setMaximumSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+    setMouseTracking(true);
 }
 
 void renderImage::receiveBitmap(void *buffer){
@@ -41,9 +44,20 @@ int renderImage::setFrameSize(unsigned width, unsigned height){
 }
 
 void renderImage::drawMarkerLine(int x0, int y0, int x1, int y1){
-    /*painter.begin(&canvas);
+    painter.begin(&canvas);
     painter.setPen(qRgb(0,255,0));
     painter.drawLine(x0, y0, x1, y1);
     painter.end();
-    update();*/
+    update();
+}
+
+void renderImage::mousePressEvent(QMouseEvent *ev){
+    qDebug("set centroif of marker %d at : %d %d", markernum, ev->x()<<1, ev->y()<<1, ev->button());
+    if (ev->button()==1) {
+        emit(getCentroid(markernum, ev->x()<<1, ev->y()<<1));
+        markernum++;
+    }
+    else if (ev->button()==2) markernum--;
+    if (markernum==MARKER_COUNT) markernum= 0;
+
 }

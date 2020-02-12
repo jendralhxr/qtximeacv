@@ -87,14 +87,9 @@ double marker::getCenterY(){
     // or any relevant centroid calculation
 }
 
-void marker::setBaseLine(int x, int y){
-    baseline[LATERAL_D]= x;
-    baseline[VERTICAL_D]= y;
-}
-
-void marker::setBaseLine(){
-    baseline[LATERAL_D]= displacement[LATERAL_D][SAMPLE_WINDOW-1];
-    baseline[VERTICAL_D]= displacement[VERTICAL_D][SAMPLE_WINDOW-1];
+void marker::setBaseline(){
+    baseline[LATERAL_D]= displacement[LATERAL_D][0];
+    baseline[VERTICAL_D]= displacement[VERTICAL_D][0];
 }
 
 void marker::updatePosition(int x, int y){
@@ -106,7 +101,7 @@ void marker::updatePosition(int x, int y){
     if ( fabs(y)> displacement_peak[VERTICAL_D]) displacement_peak[VERTICAL_D]= y;
 }
 
-// calculate the numery stuff
+// calculate the numerical stuff
 void marker::calculateFFT(){
     for (int i=0; i<SAMPLE_WINDOW; i++){
         displacement_fft[LATERAL_D][(i<<1)]= displacement[LATERAL_D][i];
@@ -125,10 +120,34 @@ void marker::calculateFFT(){
 void marker::calculateEMD(){
     err = eemd(displacement[LATERAL_D], SAMPLE_WINDOW, (double*) imfs[LATERAL_D], NUM_MODES, ensemble_size, noise_strength, S_number, num_siftings, rng_seed);
     err = eemd(displacement[VERTICAL_D], SAMPLE_WINDOW, (double*) imfs[VERTICAL_D], NUM_MODES, ensemble_size, noise_strength, S_number, num_siftings, rng_seed);
-
 }
 
 void marker::calculateDamping(){
-
-
 }
+
+void marker::setReference(double x, double y){
+   reference[LATERAL_D]= x;
+   reference[VERTICAL_D]= y;
+}
+
+void marker::setScalingFactor(double lateral_sf, double vertical_sf){
+    scalingfactor[LATERAL_D]= lateral_sf;
+    scalingfactor[VERTICAL_D]= vertical_sf;
+}
+
+void marker::setFrame(cv::Mat *frame){
+    // centroid extraction goes here
+    // estimate displacement from scaling factor
+    // append to the *displacement*
+}
+
+void marker::setSelectedIMF(int num){
+    selectimf= num;
+}
+
+void marker::run(){
+    while (1){
+        // do whatever things needed
+    }
+}
+
